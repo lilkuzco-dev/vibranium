@@ -31,33 +31,60 @@ public final class VibraniumCensusCommand {
 		ChunkPos center = ChunkPos.containing(BlockPos.containing(source.getPosition()));
 		long vibranium = 0;
 		long diamond = 0;
+		long veinstone = 0;
+		long rawBlocks = 0;
 		int chunks = 0;
+		// densest chunks by vibranium-family count — pits show up as sharp spikes
+		record Spike(int cx, int cz, long count) {
+		}
+		java.util.List<Spike> spikes = new java.util.ArrayList<>();
 		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
 		for (int cx = center.x() - radius; cx <= center.x() + radius; cx++) {
 			for (int cz = center.z() - radius; cz <= center.z() + radius; cz++) {
 				LevelChunk chunk = level.getChunk(cx, cz); // generates the chunk if missing
 				chunks++;
+				long chunkFamily = 0;
 				for (int y = level.getMinY(); y < 64; y++) {
 					for (int x = 0; x < 16; x++) {
 						for (int z = 0; z < 16; z++) {
 							BlockState state = chunk.getBlockState(cursor.set((cx << 4) + x, y, (cz << 4) + z));
 							if (state.is(VibraniumBlocks.VIBRANIUM_ORE) || state.is(VibraniumBlocks.DEEPSLATE_VIBRANIUM_ORE)) {
 								vibranium++;
+								chunkFamily++;
+							} else if (state.is(VibraniumBlocks.VIBRANIUM_VEINSTONE)) {
+								veinstone++;
+								chunkFamily++;
+							} else if (state.is(VibraniumBlocks.RAW_VIBRANIUM_BLOCK)) {
+								rawBlocks++;
+								chunkFamily++;
 							} else if (state.is(Blocks.DIAMOND_ORE) || state.is(Blocks.DEEPSLATE_DIAMOND_ORE)) {
 								diamond++;
 							}
 						}
 					}
 				}
+				if (chunkFamily > 0) {
+					spikes.add(new Spike(cx, cz, chunkFamily));
+				}
 			}
 		}
+		spikes.sort((a, b) -> Long.compare(b.count(), a.count()));
 		final int chunkCount = chunks;
 		final long vib = vibranium;
 		final long dia = diamond;
+		final long vein = veinstone;
+		final long raw = rawBlocks;
 		source.sendSuccess(() -> Component.literal(String.format(
-				"Census over %d chunks: vibranium=%d (%.3f/chunk), diamond=%d (%.3f/chunk), diamond:vibranium = %.1f:1",
+				"Census over %d chunks: vibranium=%d (%.3f/chunk), diamond=%d (%.3f/chunk), diamond:vibranium = %.1f:1; veinstone=%d, raw_blocks=%d",
 				chunkCount, vib, (double) vib / chunkCount, dia, (double) dia / chunkCount,
-				vib == 0 ? 0.0 : (double) dia / vib)), false);
+				vib == 0 ? 0.0 : (double) dia / vib, vein, raw)), false);
+		StringBuilder top = new StringBuilder("Densest chunks (vibranium family): ");
+		for (int i = 0; i < Math.min(3, spikes.size()); i++) {
+			Spike spike = spikes.get(i);
+			top.append(String.format("[%d,%d]=%d ", spike.cx() << 4, spike.cz() << 4, spike.count()));
+		}
+		final String topLine = top.toString();
+		source.sendSuccess(() -> Component.literal(topLine), false);
 		return (int) vib;
 	}
 

@@ -40,6 +40,28 @@ const BATCHES = {
 };
 // ============================================================================
 
+// ============================================================================
+//  VIBRANIUM PIT TUNING — geode-style hollow deposit (second config spot)
+// ----------------------------------------------------------------------------
+//  Built on vanilla's minecraft:geode feature (amethyst geodes' triple-shell
+//  architecture): smooth basalt casing -> veinstone shell -> dense vibranium
+//  lining with raw-block "jackpot" studs -> hollow, crystal-lit center.
+// ============================================================================
+const PIT_RARITY_CHUNKS = 240;      // 1 per N chunks (amethyst geodes: 24 -> 10x rarer)
+const PIT_Y_MIN = -55;              // deepslate depths, never breaching the surface
+const PIT_Y_MAX = -20;
+const PIT_WALL_DISTANCE = { min: 4, max: 7 }; // shell radius -> ~12-18 blocks across
+// Inner lining mix — the yield knob. Ore fraction of the inner shell controls the
+// 40-80 target (measured; veinstone dilutes, raw-block studs add the jackpot).
+const PIT_INNER_MIX = [
+	["vibranium:vibranium_veinstone", 10],
+	["vibranium:vibranium_ore", 1],
+	["vibranium:deepslate_vibranium_ore", 1],
+];
+const PIT_RAW_JACKPOT_CHANCE = 0.06; // chance per inner-shell block to be raw_vibranium_block
+const PIT_CRACK_CHANCE = 0.95;      // like amethyst geodes: usually has a visible opening
+// ============================================================================
+
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -87,6 +109,42 @@ for (const [name, batch] of Object.entries(BATCHES)) {
 	const placedName = name === "small" ? "ore_vibranium" : `ore_vibranium_${name}`;
 	files[`placed_feature/${placedName}.json`] = placed(`vibranium:ore_vibranium_${name}`, batch);
 }
+// ---------- vibranium pit (geode feature) ----------
+files["configured_feature/vibranium_pit.json"] = {
+	type: "minecraft:geode",
+	config: {
+		blocks: {
+			filling_provider: { type: "minecraft:simple_state_provider", state: { Name: "minecraft:air" } },
+			inner_layer_provider: {
+				type: "minecraft:weighted_state_provider",
+				entries: PIT_INNER_MIX.map(([name, weight]) => ({ weight, data: { Name: name } })),
+			},
+			alternate_inner_layer_provider: { type: "minecraft:simple_state_provider", state: { Name: "vibranium:raw_vibranium_block" } },
+			middle_layer_provider: { type: "minecraft:simple_state_provider", state: { Name: "vibranium:vibranium_veinstone" } },
+			outer_layer_provider: { type: "minecraft:simple_state_provider", state: { Name: "minecraft:smooth_basalt" } },
+			inner_placements: [
+				{ Name: "vibranium:vibranium_crystal_cluster", Properties: { facing: "up", waterlogged: "false" } },
+			],
+			cannot_replace: "#minecraft:features_cannot_replace",
+			invalid_blocks: "#minecraft:geode_invalid_blocks",
+		},
+		crack: { generate_crack_chance: PIT_CRACK_CHANCE },
+		invalid_blocks_threshold: 1,
+		layers: {},
+		outer_wall_distance: { type: "minecraft:uniform", min_inclusive: PIT_WALL_DISTANCE.min, max_inclusive: PIT_WALL_DISTANCE.max },
+		use_alternate_layer0_chance: PIT_RAW_JACKPOT_CHANCE,
+	},
+};
+files["placed_feature/vibranium_pit.json"] = {
+	feature: "vibranium:vibranium_pit",
+	placement: [
+		{ type: "minecraft:rarity_filter", chance: PIT_RARITY_CHUNKS },
+		{ type: "minecraft:in_square" },
+		{ type: "minecraft:height_range", height: { type: "minecraft:uniform", min_inclusive: { absolute: PIT_Y_MIN }, max_inclusive: { absolute: PIT_Y_MAX } } },
+		{ type: "minecraft:biome" },
+	],
+};
+
 for (const [rel, json] of Object.entries(files)) {
 	const file = path.join(WORLDGEN, rel);
 	fs.mkdirSync(path.dirname(file), { recursive: true });

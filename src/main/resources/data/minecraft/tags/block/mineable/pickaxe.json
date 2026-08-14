@@ -3,6 +3,8 @@
     "vibranium:vibranium_ore",
     "vibranium:deepslate_vibranium_ore",
     "vibranium:block_of_vibranium",
-    "vibranium:raw_vibranium_block"
+    "vibranium:raw_vibranium_block",
+    "vibranium:vibranium_veinstone",
+    "vibranium:vibranium_crystal_cluster"
   ]
 }

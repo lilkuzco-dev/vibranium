@@ -14,5 +14,7 @@
   "item.vibranium.vibranium_pickaxe": "Vibranium Pickaxe",
   "item.vibranium.vibranium_shovel": "Vibranium Shovel",
   "item.vibranium.vibranium_hoe": "Vibranium Hoe",
-  "item.vibranium.vibranium_spear": "Vibranium Spear"
+  "item.vibranium.vibranium_spear": "Vibranium Spear",
+  "block.vibranium.vibranium_veinstone": "Vibranium Veinstone",
+  "block.vibranium.vibranium_crystal_cluster": "Vibranium Crystal Cluster"
 }

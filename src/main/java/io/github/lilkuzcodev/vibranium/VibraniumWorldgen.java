@@ -21,6 +21,7 @@ public final class VibraniumWorldgen {
 	public static final ResourceKey<PlacedFeature> ORE_VIBRANIUM_MEDIUM = key("ore_vibranium_medium");
 	public static final ResourceKey<PlacedFeature> ORE_VIBRANIUM_LARGE = key("ore_vibranium_large");
 	public static final ResourceKey<PlacedFeature> ORE_VIBRANIUM_BURIED = key("ore_vibranium_buried");
+	public static final ResourceKey<PlacedFeature> VIBRANIUM_PIT = key("vibranium_pit");
 
 	private static ResourceKey<PlacedFeature> key(String name) {
 		return ResourceKey.create(Registries.PLACED_FEATURE, Vibranium.id(name));
@@ -30,6 +31,8 @@ public final class VibraniumWorldgen {
 		for (ResourceKey<PlacedFeature> feature : List.of(ORE_VIBRANIUM, ORE_VIBRANIUM_MEDIUM, ORE_VIBRANIUM_LARGE, ORE_VIBRANIUM_BURIED)) {
 			BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.UNDERGROUND_ORES, feature);
 		}
+		// pits generate in the same step vanilla geodes use
+		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.LOCAL_MODIFICATIONS, VIBRANIUM_PIT);
 	}
 
 	private VibraniumWorldgen() {

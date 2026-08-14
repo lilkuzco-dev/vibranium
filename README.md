@@ -2,7 +2,8 @@
 
 A Fabric mod for Minecraft 26.2 that adds **vibranium**, a rare purple metal, to the deep underground.
 
-- `vibranium_ore` / `deepslate_vibranium_ore` — generate below Y16 with diamond's exact distribution shape, but **5× rarer** (every diamond batch, gated to 1-in-5 chunks; measured 5.3:1 over 450 chunks). Iron pickaxe or better; drops 1 **raw vibranium** with Fortune scaling like raw iron, Silk Touch drops the ore block, 3–7 XP on mine.
+- `vibranium_ore` / `deepslate_vibranium_ore` — generate below Y16 with diamond's exact distribution shape, but **5× rarer** (every diamond batch, gated to 1-in-5 chunks; measured 5.3:1 over 450 chunks). **Diamond pickaxe or better** (iron breaks slowly and drops nothing); drops 1 **raw vibranium** with Fortune scaling like raw iron, Silk Touch drops the ore block, 3–7 XP on mine.
+- **Vibranium pits** — rare geode-style hollow deposits at deepslate depths (1 per ~240 chunks, Y −55..−20): a smooth-basalt casing around a **vibranium veinstone** shell, a dense ore lining studded with raw vibranium blocks, and a crystal-lit hollow center (**vibranium crystal clusters**, light 7, drop raw vibranium — or themselves with Silk Touch). A pit holds ~40–80 vibranium (measured ~59 average).
 - `vibranium_ingot` — smelt or blast the ore or raw vibranium (0.7 XP, like iron).
 - `block_of_vibranium` (9 ingots ⇄ 1) and `raw_vibranium_block` (9 raw ⇄ 1), matching vanilla's metal storage blocks.
 - **Weapons** — `vibranium_sword` (9 damage / 1.6 speed), `vibranium_axe` (11 / 1.0), and `vibranium_spear` (8 / 1.2 with **5.5-block thrust reach**, 7.5 lunging — vanilla spear mechanics, longer): a tier above netherite, crafted directly from ingots + sticks (no smithing), 2600 durability, diamond enchantability, anvil-repaired with ingots, fire-resistant as dropped items.

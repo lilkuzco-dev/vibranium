@@ -261,6 +261,9 @@ const JOBS = [
 	{ src: "item/diamond_hoe", out: "textures/item/vibranium_hoe.png", mode: "cyan-only" },
 	{ src: "item/diamond_spear", out: "textures/item/vibranium_spear.png", mode: "cyan-only" },
 	{ src: "item/diamond_spear_in_hand", out: "textures/item/vibranium_spear_in_hand.png", mode: "cyan-only" },
+	// pit blocks: veinstone = deepslate tinted deep purple; crystal = amethyst cluster hue-shifted
+	{ src: "block/deepslate", out: "textures/block/vibranium_veinstone.png", mode: "all" },
+	{ src: "block/amethyst_cluster", out: "textures/block/vibranium_crystal_cluster.png", mode: "saturated" },
 ];
 const results = {};
 for (const job of JOBS) {

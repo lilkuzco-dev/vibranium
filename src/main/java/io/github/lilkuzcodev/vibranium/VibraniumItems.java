@@ -76,6 +76,8 @@ public final class VibraniumItems {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.NATURAL_BLOCKS).register(output -> {
 			output.insertAfter(Items.DEEPSLATE_DIAMOND_ORE, VibraniumBlocks.VIBRANIUM_ORE, VibraniumBlocks.DEEPSLATE_VIBRANIUM_ORE);
 			output.insertAfter(Items.RAW_IRON_BLOCK, VibraniumBlocks.RAW_VIBRANIUM_BLOCK);
+			output.insertAfter(Items.AMETHYST_CLUSTER, VibraniumBlocks.VIBRANIUM_CRYSTAL_CLUSTER);
+			output.insertAfter(Items.DEEPSLATE, VibraniumBlocks.VIBRANIUM_VEINSTONE);
 		});
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.BUILDING_BLOCKS).register(output ->
 				output.insertAfter(Items.IRON_BLOCK, VibraniumBlocks.BLOCK_OF_VIBRANIUM));

@@ -1,0 +1,1 @@
+{"type":"minecraft:block","pools":[{"conditions":[{"condition":"minecraft:survives_explosion"}],"entries":[{"type":"minecraft:item","name":"vibranium:vibranium_veinstone"}],"rolls":1.0}],"random_sequence":"vibranium:blocks/vibranium_veinstone"}

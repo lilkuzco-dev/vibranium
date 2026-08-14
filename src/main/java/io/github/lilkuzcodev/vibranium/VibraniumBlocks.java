@@ -58,6 +58,30 @@ public final class VibraniumBlocks {
 					.requiresCorrectToolForDrops()
 					.strength(5.0F, 6.0F));
 
+	// Pit middle shell: deep purple stone, any pickaxe, drops itself. Future crafting material.
+	public static final Block VIBRANIUM_VEINSTONE = register(
+			"vibranium_veinstone",
+			Block::new,
+			BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_PURPLE)
+					.instrument(NoteBlockInstrument.BASEDRUM)
+					.requiresCorrectToolForDrops()
+					.strength(3.0F, 6.0F)
+					.sound(SoundType.DEEPSLATE));
+
+	// Pit dressing: amethyst-cluster-style crystal, light level 7, purple.
+	public static final Block VIBRANIUM_CRYSTAL_CLUSTER = register(
+			"vibranium_crystal_cluster",
+			properties -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 10.0F, properties),
+			BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_PURPLE)
+					.forceSolidOn()
+					.noOcclusion()
+					.sound(SoundType.AMETHYST_CLUSTER)
+					.strength(1.5F)
+					.lightLevel(state -> 7)
+					.pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+
 	private static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties properties) {
 		Identifier id = Vibranium.id(name);
 		ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, id);
