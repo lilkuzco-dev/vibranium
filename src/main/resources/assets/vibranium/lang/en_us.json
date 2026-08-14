@@ -8,6 +8,7 @@
   "item.vibranium.vibranium_sword": "Vibranium Sword",
   "item.vibranium.vibranium_axe": "Vibranium Axe",
   "item.vibranium.vibranium_energy_ball": "Kinetic Energy Ball",
-  "item.vibranium.kinetic_charge": "Kinetic Charge: %s/%s ❤",
-  "entity.vibranium.kinetic_energy_ball": "Kinetic Energy Ball"
+  "item.vibranium.kinetic_charge": "Kinetic Charge: %s/%s",
+  "entity.vibranium.kinetic_energy_ball": "Kinetic Energy Ball",
+  "item.vibranium.kinetic_primed": "PRIMED — next strike detonates"
 }

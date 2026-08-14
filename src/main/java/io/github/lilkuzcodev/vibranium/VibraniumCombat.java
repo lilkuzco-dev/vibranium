@@ -25,15 +25,15 @@ public final class VibraniumCombat {
 	public static final float AXE_BASE_DAMAGE = 5.0F;     // vanilla axe baseline
 	public static final float AXE_ATTACK_SPEED = -3.0F;   // diamond/netherite axe baseline
 
-	// ==================== KINETIC DISCHARGE PERK ====================
-	public static final float CHARGE_CAP = 20.0F;           // max absorbed damage = 10 hearts
-	public static final float ABSORB_RATIO = 1.0F;          // charge per point of (post-armor) damage taken
-	public static final float BURST_DAMAGE = 8.0F;          // AoE damage at FULL charge = 4 hearts (scales with charge)
-	public static final double BURST_RADIUS = 4.0;          // blocks
-	public static final double KNOCKBACK_STRENGTH = 2.5;    // horizontal launch velocity at full charge, point blank
-	public static final double KNOCKBACK_VERTICAL = 1.1;    // upward launch velocity at full charge
-	public static final float EDGE_FALLOFF = 0.7F;          // fraction of damage/knockback lost at the radius edge
-	public static final int DISCHARGE_COOLDOWN_TICKS = 100; // 5 seconds
+	// ==================== KINETIC STRIKE CYCLE ====================
+	public static final int HITS_TO_PRIME = 6;            // hits that build charge; the NEXT (7th) hit detonates
+	public static final double STRIKE_RADIUS = 3.0;       // burst radius around the STRUCK TARGET (not the player)
+	public static final float STRIKE_BONUS_DAMAGE = 8.0F; // bonus AoE damage at center = 4 hearts, falls off
+	public static final double STRIKE_KNOCKBACK = 1.8;    // horizontal launch at center
+	public static final double STRIKE_VERTICAL = 0.9;     // upward launch ("up/away")
+	public static final float STRIKE_FALLOFF = 0.6F;      // fraction of damage/knockback lost at the radius edge
+	public static final int DECAY_WINDOW_TICKS = 600;     // charges reset after 30 s without landing a hit
+	public static final int PARTICLE_THRESHOLD = 4;       // charge count where the buildup particle cue starts
 
 	// ==================== KINETIC ENERGY BALL ====================
 	public static final float ENERGY_BALL_EXPLOSION_POWER = 20.0F; // TNT is 4.0

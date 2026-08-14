@@ -21,7 +21,6 @@ public class Vibranium implements ModInitializer {
 		VibraniumEntities.init();
 		VibraniumWorldgen.init();
 		VibraniumCensusCommand.init();
-		KineticDischarge.init();
 		LOGGER.info("Vibranium initialized");
 	}
 }
