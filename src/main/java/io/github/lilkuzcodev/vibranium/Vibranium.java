@@ -15,10 +15,13 @@ public class Vibranium implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		VibraniumComponents.init(); // before anything touches ItemStacks
 		VibraniumBlocks.init();
 		VibraniumItems.init();
+		VibraniumEntities.init();
 		VibraniumWorldgen.init();
 		VibraniumCensusCommand.init();
+		KineticDischarge.init();
 		LOGGER.info("Vibranium initialized");
 	}
 }

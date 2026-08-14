@@ -178,21 +178,32 @@ function hslToRgb(h, s, l) {
 	return [Math.round(f(h + 1 / 3) * 255), Math.round(f(h) * 255), Math.round(f(h - 1 / 3) * 255)];
 }
 
-// mode "saturated": recolor only clearly-colored pixels (ore: gems yes, stone no)
-// mode "all":       recolor every opaque pixel; grays gain purple saturation
-function recolor(img, mode) {
+// mode "saturated":  recolor only clearly-colored pixels (ore: gems yes, stone no)
+// mode "all":        recolor every opaque pixel; grays gain purple saturation
+// mode "cyan-only":  recolor only cyan/teal-hued pixels (weapon blades/heads),
+//                    leaving wooden handles and other materials untouched
+// opts.brighten:     push bright pixels further toward white (glowing-energy look)
+function recolor(img, mode, opts = {}) {
 	const out = Buffer.from(img.px);
 	for (let i = 0; i < out.length; i += 4) {
 		if (out[i + 3] < 8) continue;
 		const [h, s, l] = rgbToHsl(out[i], out[i + 1], out[i + 2]);
 		let ns = s;
+		let nl = l;
 		if (mode === "saturated") {
 			if (s < 0.14) continue; // stone stays stone
+		} else if (mode === "cyan-only") {
+			if (s < 0.14 || h < 0.35 || h > 0.62) continue; // only the cyan family moves
 		} else if (s < 0.1) {
 			// gray metal: synthesize purple saturation, gentler at the extremes
 			ns = l > 0.9 || l < 0.12 ? 0.22 : 0.42;
 		}
-		const [r, g, b] = hslToRgb(PURPLE_HUE, ns, l);
+		if (opts.brighten) {
+			// glowing-energy look: lift the whole body, then push the glints toward white
+			nl = Math.min(0.92, 0.15 + l * 1.4);
+			if (l > 0.35) nl = Math.min(0.97, nl + 0.25);
+		}
+		const [r, g, b] = hslToRgb(PURPLE_HUE, ns, nl);
 		out[i] = r;
 		out[i + 1] = g;
 		out[i + 2] = b;
@@ -239,10 +250,15 @@ const JOBS = [
 	{ src: "item/iron_ingot", out: "textures/item/vibranium_ingot.png", mode: "all" },
 	{ src: "item/raw_iron", out: "textures/item/raw_vibranium.png", mode: "all" },
 	{ src: "block/raw_iron_block", out: "textures/block/raw_vibranium_block.png", mode: "all" },
+	// weapons: only the cyan blade/head pixels shift to purple; handles stay wooden
+	{ src: "item/diamond_sword", out: "textures/item/vibranium_sword.png", mode: "cyan-only" },
+	{ src: "item/diamond_axe", out: "textures/item/vibranium_axe.png", mode: "cyan-only" },
+	// energy ball: pearl -> purple with the central highlight glowing toward white
+	{ src: "item/ender_pearl", out: "textures/item/vibranium_energy_ball.png", mode: "all", brighten: true },
 ];
 const results = {};
 for (const job of JOBS) {
-	const img = recolor(decodePng(readFromJar(jar, `assets/minecraft/textures/${job.src}.png`)), job.mode);
+	const img = recolor(decodePng(readFromJar(jar, `assets/minecraft/textures/${job.src}.png`)), job.mode, { brighten: job.brighten });
 	results[job.out] = img;
 	const file = path.join(ASSETS, job.out);
 	fs.mkdirSync(path.dirname(file), { recursive: true });

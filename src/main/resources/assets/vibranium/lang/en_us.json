@@ -4,5 +4,10 @@
   "block.vibranium.block_of_vibranium": "Block of Vibranium",
   "block.vibranium.raw_vibranium_block": "Block of Raw Vibranium",
   "item.vibranium.raw_vibranium": "Raw Vibranium",
-  "item.vibranium.vibranium_ingot": "Vibranium Ingot"
+  "item.vibranium.vibranium_ingot": "Vibranium Ingot",
+  "item.vibranium.vibranium_sword": "Vibranium Sword",
+  "item.vibranium.vibranium_axe": "Vibranium Axe",
+  "item.vibranium.vibranium_energy_ball": "Kinetic Energy Ball",
+  "item.vibranium.kinetic_charge": "Kinetic Charge: %s/%s ❤",
+  "entity.vibranium.kinetic_energy_ball": "Kinetic Energy Ball"
 }

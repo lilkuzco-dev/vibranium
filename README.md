@@ -3,8 +3,11 @@
 A Fabric mod for Minecraft 26.2 that adds **vibranium**, a rare purple metal, to the deep underground.
 
 - `vibranium_ore` / `deepslate_vibranium_ore` — generate below Y16 with diamond's exact distribution shape, but **5× rarer** (every diamond batch, gated to 1-in-5 chunks; measured 5.3:1 over 450 chunks). Iron pickaxe or better; drops 1 **raw vibranium** with Fortune scaling like raw iron, Silk Touch drops the ore block, 3–7 XP on mine.
-- `vibranium_ingot` — smelt or blast the ore or raw vibranium (0.7 XP, like iron). Future tools/weapons will craft from ingots.
+- `vibranium_ingot` — smelt or blast the ore or raw vibranium (0.7 XP, like iron).
 - `block_of_vibranium` (9 ingots ⇄ 1) and `raw_vibranium_block` (9 raw ⇄ 1), matching vanilla's metal storage blocks.
+- **Weapons** — `vibranium_sword` (9 damage / 1.6 speed) and `vibranium_axe` (11 / 1.0): a tier above netherite, crafted directly from ingots + sticks (no smithing), 2600 durability, diamond enchantability, anvil-repaired with ingots, fire-resistant as dropped items.
+- **Kinetic discharge** — holding a vibranium weapon, melee damage you take charges it (cap 10 hearts, shown in the tooltip; witch-particle shimmer at full). Sneak + right-click releases the stored energy: an AoE burst (4-block radius) whose damage and knockback scale with charge — full charge launches nearby mobs skyward. 5s cooldown; charge lives on the item and survives relogs. Fall/fire/cactus damage never charges it.
+- **Kinetic energy ball** — a throwable with ender-pearl flight and a power-20 purple explosion on impact (TNT is 4; yes, it craters — and the thrower is not immune). Crafted like TNT with ingots instead of sand (yields 8), stacks to 16.
 
 Requires [Fabric Loader](https://fabricmc.net) 0.19.3+ and [Fabric API](https://modrinth.com/mod/fabric-api) for 26.2. Textures are programmatic purple recolors of the corresponding vanilla textures (see tools/gen-textures.js), i.e. derivative of Mojang's art — fine inside a Minecraft mod, but not original artwork.
 
@@ -24,6 +27,7 @@ Standard Fabric Loom project (Mojang mappings). Requires JDK 25.
 Handy knobs and tools:
 
 - **Ore rarity**: constants at the top of `tools/gen-worldgen.js` (`DENSITY_DIVISOR` + per-batch table). Run `node tools/gen-worldgen.js`, then rebuild.
+- **Combat + perk + energy ball tuning**: every number (weapon stats, charge cap/ratio, burst damage/radius/knockback/cooldown, explosion power, terrain-damage flag, stack size) lives in `VibraniumCombat.java`'s commented stat blocks.
 - **Tool tier**: `src/main/resources/data/minecraft/tags/block/needs_iron_tool.json`
 - **Drops / XP**: `src/main/resources/data/vibranium/loot_table/blocks/` and `UniformInt.of(3, 7)` in `VibraniumBlocks.java`
 - **Textures**: regenerate with `node tools/gen-textures.js` (zero-dependency PNG generator)
