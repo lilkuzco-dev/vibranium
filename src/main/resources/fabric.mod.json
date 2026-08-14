@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "vibranium",
+	"version": "${version}",
+	"name": "Vibranium",
+	"description": "Adds vibranium ore to the deep underground: a rare purple gem mined like diamond, with a storage block and smelting recipes.",
+	"authors": [
+		"lilkuzco-dev"
+	],
+	"contact": {
+		"sources": "https://github.com/lilkuzco-dev"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/vibranium/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.lilkuzcodev.vibranium.Vibranium"
+		],
+		"client": [
+			"io.github.lilkuzcodev.vibranium.client.VibraniumClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
