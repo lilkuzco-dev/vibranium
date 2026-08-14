@@ -6,7 +6,7 @@ A Fabric mod for Minecraft 26.2 that adds **vibranium**, a rare purple metal, to
 - `vibranium_ingot` — smelt or blast the ore or raw vibranium (0.7 XP, like iron). Future tools/weapons will craft from ingots.
 - `block_of_vibranium` (9 ingots ⇄ 1) and `raw_vibranium_block` (9 raw ⇄ 1), matching vanilla's metal storage blocks.
 
-Requires [Fabric Loader](https://fabricmc.net) 0.19.3+ and [Fabric API](https://modrinth.com/mod/fabric-api) for 26.2. All textures are original, generated pixel art.
+Requires [Fabric Loader](https://fabricmc.net) 0.19.3+ and [Fabric API](https://modrinth.com/mod/fabric-api) for 26.2. Textures are programmatic purple recolors of the corresponding vanilla textures (see tools/gen-textures.js), i.e. derivative of Mojang's art — fine inside a Minecraft mod, but not original artwork.
 
 ## Install
 
