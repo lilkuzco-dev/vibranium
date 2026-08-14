@@ -12,7 +12,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import org.jspecify.annotations.Nullable;
 
-public class VibraniumSwordItem extends Item implements KineticWeapon {
+public class VibraniumSwordItem extends Item implements KineticCycleWeapon {
 	public VibraniumSwordItem(Properties properties) {
 		super(properties);
 	}

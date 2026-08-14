@@ -255,6 +255,12 @@ const JOBS = [
 	{ src: "item/diamond_axe", out: "textures/item/vibranium_axe.png", mode: "cyan-only" },
 	// energy ball: pearl -> purple with the central highlight glowing toward white
 	{ src: "item/ender_pearl", out: "textures/item/vibranium_energy_ball.png", mode: "all", brighten: true },
+	// tools + spear: cyan heads -> purple, wooden handles untouched
+	{ src: "item/diamond_pickaxe", out: "textures/item/vibranium_pickaxe.png", mode: "cyan-only" },
+	{ src: "item/diamond_shovel", out: "textures/item/vibranium_shovel.png", mode: "cyan-only" },
+	{ src: "item/diamond_hoe", out: "textures/item/vibranium_hoe.png", mode: "cyan-only" },
+	{ src: "item/diamond_spear", out: "textures/item/vibranium_spear.png", mode: "cyan-only" },
+	{ src: "item/diamond_spear_in_hand", out: "textures/item/vibranium_spear_in_hand.png", mode: "cyan-only" },
 ];
 const results = {};
 for (const job of JOBS) {

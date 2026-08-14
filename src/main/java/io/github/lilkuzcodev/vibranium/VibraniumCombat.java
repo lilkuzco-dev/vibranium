@@ -17,13 +17,24 @@ public final class VibraniumCombat {
 	//   -> sword: 1 + 3.0 + 5.0 = 9 damage, 4 - 2.4 = 1.6 speed  (netherite: 8 / 1.6)
 	//   -> axe:   1 + 5.0 + 5.0 = 11 damage, 4 - 3.0 = 1.0 speed (netherite: 10 / 1.0)
 	public static final int DURABILITY = 2600;            // netherite 2031, diamond 1561
-	public static final float MINING_SPEED = 10.0F;       // netherite 9.0 (one step up)
+	public static final float MINING_SPEED = 11.0F;       // netherite 9.0
 	public static final float DAMAGE_BONUS = 5.0F;        // netherite 4.0
 	public static final int ENCHANTABILITY = 10;          // same as diamond (netherite is 15)
 	public static final float SWORD_BASE_DAMAGE = 3.0F;   // vanilla sword baseline
 	public static final float SWORD_ATTACK_SPEED = -2.4F; // vanilla sword baseline
 	public static final float AXE_BASE_DAMAGE = 5.0F;     // vanilla axe baseline
 	public static final float AXE_ATTACK_SPEED = -3.0F;   // diamond/netherite axe baseline
+	// tools: vanilla baselines (pickaxe 1.0/-2.8, shovel 1.5/-3.0, hoe cancels to 1 dmg)
+	public static final float HOE_BASE_DAMAGE = -5.0F;    // -5 + 5 bonus + 1 = 1 damage, like all hoes
+
+	// ======================= VIBRANIUM SPEAR =======================
+	// Mirrors the vanilla 26.2 spear (kinetic charge component, piercing, STAB swing)
+	// with a longer ATTACK_RANGE and tier-above damage. Reach is vanilla's own
+	// AttackRange component — no custom hit handling.
+	public static final float SPEAR_ATTACK_DURATION = 1.0F / 1.2F; // -> exactly 1.2 attack speed
+	public static final float SPEAR_BASE_DAMAGE = 2.0F;   // 1 + 2 + 5 bonus = 8 total (sword is 9)
+	public static final float SPEAR_REACH = 5.5F;         // standard thrust reach (vanilla spears: 4.5)
+	public static final float SPEAR_CHARGED_REACH = 7.5F; // sprint/mounted lunge reach (vanilla: 6.5)
 
 	// ==================== KINETIC STRIKE CYCLE ====================
 	public static final int HITS_TO_PRIME = 6;            // hits that build charge; the NEXT (7th) hit detonates
