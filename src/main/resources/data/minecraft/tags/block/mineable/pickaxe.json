@@ -5,6 +5,8 @@
     "vibranium:block_of_vibranium",
     "vibranium:raw_vibranium_block",
     "vibranium:vibranium_veinstone",
-    "vibranium:vibranium_crystal_cluster"
+    "vibranium:vibranium_crystal_cluster",
+    "vibranium:vibranium_fabricator",
+    "vibranium:vibranium_extractor"
   ]
 }

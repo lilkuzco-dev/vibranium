@@ -1,0 +1,1 @@
+{"type":"minecraft:crafting_shaped","category":"misc","key":{"I":"vibranium:vibranium_ingot","O":"minecraft:obsidian","V":"vibranium:vibranium_veinstone","C":"minecraft:crafting_table"},"pattern":["IOI","VCV","IOI"],"result":{"id":"vibranium:vibranium_fabricator"}}

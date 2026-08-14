@@ -16,5 +16,17 @@
   "item.vibranium.vibranium_hoe": "Vibranium Hoe",
   "item.vibranium.vibranium_spear": "Vibranium Spear",
   "block.vibranium.vibranium_veinstone": "Vibranium Veinstone",
-  "block.vibranium.vibranium_crystal_cluster": "Vibranium Crystal Cluster"
+  "block.vibranium.vibranium_crystal_cluster": "Vibranium Crystal Cluster",
+  "block.vibranium.vibranium_fabricator": "Vibranium Fabricator",
+  "block.vibranium.vibranium_extractor": "Vibranium Extractor",
+  "container.vibranium.fabricator": "Vibranium Fabricator",
+  "container.vibranium.extractor": "Vibranium Extractor",
+  "gui.vibranium.extractor.no_fuel": "Needs fuel",
+  "gui.vibranium.extractor.running": "Mining at Y=%s",
+  "gui.vibranium.extractor.halt_lava": "Halted: lava below",
+  "gui.vibranium.extractor.halt_water": "Halted: water below",
+  "gui.vibranium.extractor.halt_unbreakable": "Stopped: unbreakable block",
+  "gui.vibranium.extractor.done": "Finished: reached the bottom",
+  "gui.vibranium.extractor.full": "Paused: inventory full",
+  "gui.vibranium.extractor.boost": "Vibranium boost: 4x speed"
 }

@@ -18,9 +18,11 @@ public class Vibranium implements ModInitializer {
 		VibraniumComponents.init(); // before anything touches ItemStacks
 		VibraniumBlocks.init();
 		VibraniumItems.init();
+		VibraniumMachines.init();
 		VibraniumEntities.init();
 		VibraniumWorldgen.init();
 		VibraniumCensusCommand.init();
+		VibraniumSelfTestCommand.init();
 		LOGGER.info("Vibranium initialized");
 	}
 }

@@ -82,6 +82,31 @@ public final class VibraniumBlocks {
 					.lightLevel(state -> 7)
 					.pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
 
+	// ---------- machines (v1.6.0) ----------
+	// Fabricator: crafting-table-like workstation (no fuel/power); casing art from
+	// TechReborn (hue-shifted, see CREDITS.md). Strength ~ crafting table but stone-y.
+	public static final Block VIBRANIUM_FABRICATOR = register(
+			"vibranium_fabricator",
+			FabricatorBlock::new,
+			BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_PURPLE)
+					.instrument(NoteBlockInstrument.BASEDRUM)
+					.requiresCorrectToolForDrops()
+					.strength(3.5F, 6.0F)
+					.sound(SoundType.METAL));
+
+	// Extractor: the fueled auto-miner. LIT swaps the animated drill face in.
+	public static final Block VIBRANIUM_EXTRACTOR = register(
+			"vibranium_extractor",
+			ExtractorBlock::new,
+			BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_PURPLE)
+					.instrument(NoteBlockInstrument.BASEDRUM)
+					.requiresCorrectToolForDrops()
+					.strength(3.5F, 6.0F)
+					.sound(SoundType.METAL)
+					.lightLevel(state -> state.getValue(ExtractorBlock.LIT) ? 7 : 0));
+
 	private static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties properties) {
 		Identifier id = Vibranium.id(name);
 		ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, id);

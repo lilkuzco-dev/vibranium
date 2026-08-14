@@ -1,16 +1,17 @@
 #!/usr/bin/env node
-// Vibranium textures v3 — vanilla recolors ("literally the vanilla texture,
-// except purple"). Decodes the real textures from the Minecraft client jar in
-// the Fabric Loom cache and remaps their hues to purple, preserving every
-// pixel's structure and luminance:
-//   diamond_ore / deepslate_diamond_ore -> vibranium ores   (stone untouched)
-//   diamond_block                        -> block_of_vibranium
-//   iron_ingot                           -> vibranium_ingot
-//   raw_iron                             -> raw_vibranium
-//   raw_iron_block                       -> raw_vibranium_block
-// NOTE: output is derivative of Mojang's art (normal for Minecraft mods, but
-// not original artwork). Requires `unzip` on PATH and a populated Loom cache
-// (run any gradle task once first). Usage:
+// Vibranium textures v4 — hue-shifted derivatives from TWO sources:
+//   1. the vanilla Minecraft client jar in the Fabric Loom cache (`src` jobs)
+//   2. a local TechReborn checkout (`trSrc` jobs) — MIT-licensed art, see
+//      CREDITS.md. Auto-cloned to .techreborn-src (branch 26.2) if missing;
+//      override the location with the TECHREBORN_SRC env var.
+// Every texture the mod ships flows through this script: no from-scratch
+// pixel art is generated. GUI textures are COMPOSED from vanilla GUI parts
+// (crafting_table.png / furnace.png regions rearranged into 176x206 layouts)
+// and then trimmed purple; block/item textures are straight hue remaps that
+// preserve pixel structure and luminance.
+// NOTE: output is derivative of Mojang's and TechReborn's art (normal for
+// Minecraft mods, but not original artwork). Requires `unzip` + `git` on
+// PATH and a populated Loom cache (run any gradle task once first). Usage:
 //   node tools/gen-textures.js [--previews <dir>]
 
 const zlib = require("node:zlib");
@@ -38,6 +39,24 @@ function findClientJar() {
 	throw new Error("Could not find a Loom-cached Minecraft client jar with textures. Run ./gradlew build once first.");
 }
 const readFromJar = (jar, entry) => execFileSync("unzip", ["-p", jar, entry], { maxBuffer: 1 << 24 });
+
+// ---------- locate (or clone) the TechReborn asset tree ----------
+// TechReborn is MIT (Copyright (c) 2020 TechReborn); its textures may be
+// modified and redistributed with attribution — see CREDITS.md. We never
+// invent pixel art here: if a needed source file is absent, the script fails
+// loudly instead of generating something.
+function findTechRebornDir() {
+	const dir = process.env.TECHREBORN_SRC || path.join(__dirname, "..", ".techreborn-src");
+	const marker = path.join(dir, "src/main/resources/assets/techreborn/textures");
+	if (!fs.existsSync(marker)) {
+		console.log(`TechReborn checkout not found; cloning branch 26.2 into ${dir} ...`);
+		execFileSync("git", ["clone", "--depth", "1", "-b", "26.2", "https://github.com/TechReborn/TechReborn", dir], { stdio: "inherit" });
+	}
+	if (!fs.existsSync(marker)) throw new Error(`TechReborn assets missing at ${marker}`);
+	return dir;
+}
+const readFromTechReborn = (trDir, rel) =>
+	fs.readFileSync(path.join(trDir, "src/main/resources/assets/techreborn/textures", rel));
 
 // ---------- PNG decode (8/4/2/1-bit; color types 0,2,3,4,6; no interlace) ----------
 function decodePng(buf) {
@@ -264,16 +283,116 @@ const JOBS = [
 	// pit blocks: veinstone = deepslate tinted deep purple; crystal = amethyst cluster hue-shifted
 	{ src: "block/deepslate", out: "textures/block/vibranium_veinstone.png", mode: "all" },
 	{ src: "block/amethyst_cluster", out: "textures/block/vibranium_crystal_cluster.png", mode: "saturated" },
+	// ---- machines (v1.6.0) — TechReborn art, hue-shifted purple (MIT, see CREDITS.md) ----
+	// fabricator: advanced casing sides, auto-crafting-table grid top, plain machine bottom
+	{ trSrc: "block/machines/structure/advanced_machine_casing.png", out: "textures/block/vibranium_fabricator_side.png", mode: "all" },
+	{ trSrc: "block/machines/tier1_machines/auto_crafting_table_top.png", out: "textures/block/vibranium_fabricator_top.png", mode: "all" },
+	{ trSrc: "block/machines/tier0_machines/machine_bottom.png", out: "textures/block/vibranium_fabricator_bottom.png", mode: "all" },
+	// extractor: basic casing sides, machine top, grinder wheel as the down-facing
+	// drill head (grinder_front_on is a 3-frame animation; its .mcmeta ships too)
+	{ trSrc: "block/machines/structure/basic_machine_casing.png", out: "textures/block/vibranium_extractor_side.png", mode: "all" },
+	{ trSrc: "block/machines/tier0_machines/machine_top.png", out: "textures/block/vibranium_extractor_top.png", mode: "all" },
+	{ trSrc: "block/machines/tier1_machines/grinder_front_off.png", out: "textures/block/vibranium_extractor_drill.png", mode: "all" },
+	{ trSrc: "block/machines/tier1_machines/grinder_front_on.png", out: "textures/block/vibranium_extractor_drill_on.png", mode: "all",
+		mcmeta: "block/machines/tier1_machines/grinder_front_on.png.mcmeta" },
 ];
+const trDir = findTechRebornDir();
+console.log(`techreborn src: ${trDir}`);
 const results = {};
 for (const job of JOBS) {
-	const img = recolor(decodePng(readFromJar(jar, `assets/minecraft/textures/${job.src}.png`)), job.mode, { brighten: job.brighten });
+	const source = job.trSrc ? readFromTechReborn(trDir, job.trSrc) : readFromJar(jar, `assets/minecraft/textures/${job.src}.png`);
+	const img = recolor(decodePng(source), job.mode, { brighten: job.brighten });
 	results[job.out] = img;
 	const file = path.join(ASSETS, job.out);
 	fs.mkdirSync(path.dirname(file), { recursive: true });
 	fs.writeFileSync(file, encodePng(img.w, img.h, img.px));
-	console.log(`wrote ${job.out}  (recolored ${job.src})`);
+	if (job.mcmeta) fs.writeFileSync(file + ".mcmeta", readFromTechReborn(trDir, job.mcmeta));
+	console.log(`wrote ${job.out}  (recolored ${job.trSrc ? "techreborn:" + job.trSrc : job.src}${job.mcmeta ? " + animation mcmeta" : ""})`);
 }
+
+// ============================================================================
+//  GUI COMPOSITION — 176x206 container screens assembled from vanilla parts.
+//  Layout constants here MUST match FabricatorMenu/FabricatorScreen and
+//  ExtractorMenu/ExtractorScreen in the Java source (coordinates are the
+//  slot/widget positions minus 1 for the 18x18 slot borders).
+// ============================================================================
+function blitRegion(dst, dstW, src, srcW, sx, sy, w, h, dx, dy) {
+	for (let y = 0; y < h; y++)
+		for (let x = 0; x < w; x++) {
+			const si = ((sy + y) * srcW + sx + x) * 4;
+			const di = ((dy + y) * dstW + dx + x) * 4;
+			src.px.copy(dst, di, si, si + 4);
+		}
+}
+// purple-tint a rectangle in place (the "dark/purple trim"): grays gain a
+// deep purple cast, anything already colored is hue-shifted
+function tintRect(px, w, x0, y0, rw, rh) {
+	for (let y = y0; y < y0 + rh; y++)
+		for (let x = x0; x < x0 + rw; x++) {
+			const i = (y * w + x) * 4;
+			if (px[i + 3] < 8) continue;
+			const [, s, l] = rgbToHsl(px[i], px[i + 1], px[i + 2]);
+			const [r, g, b] = hslToRgb(PURPLE_HUE, Math.max(s, 0.34), Math.max(0.06, l * 0.82));
+			px[i] = r; px[i + 1] = g; px[i + 2] = b;
+		}
+}
+function composeGuis() {
+	const crafting = decodePng(readFromJar(jar, "assets/minecraft/textures/gui/container/crafting_table.png"));
+	const furnace = decodePng(readFromJar(jar, "assets/minecraft/textures/gui/container/furnace.png"));
+	const litSprite = decodePng(readFromJar(jar, "assets/minecraft/textures/gui/sprites/container/furnace/lit_progress.png"));
+	const burnSprite = decodePng(readFromJar(jar, "assets/minecraft/textures/gui/sprites/container/furnace/burn_progress.png"));
+
+	// shared scaffold: vanilla top border rows, tiled clean panel body, and the
+	// whole player-inventory half (vanilla rows 82..165) moved down to y=122
+	function scaffold(base) {
+		const px = Buffer.alloc(256 * 256 * 4);
+		const cv = { w: 256, h: 256, px };
+		blitRegion(px, 256, base, 256, 0, 0, 176, 4, 0, 0); // top border
+		for (let y = 4; y < 122; y++) blitRegion(px, 256, base, 256, 0, 8, 176, 1, 0, y); // clean body row tiled
+		blitRegion(px, 256, base, 256, 0, 82, 176, 84, 0, 122); // player inventory half (incl. bottom border)
+		return cv;
+	}
+	const slotCell = { img: crafting, x: 29, y: 16 }; // one 18x18 slot cell w/ border
+
+	// ---------- fabricator: 5x5 grid (8,16), arrow (102,54), result (130,52) ----------
+	const fab = scaffold(crafting);
+	for (let r = 0; r < 5; r++)
+		for (let c = 0; c < 5; c++)
+			blitRegion(fab.px, 256, slotCell.img, 256, slotCell.x, slotCell.y, 18, 18, 7 + 18 * c, 15 + 18 * r);
+	blitRegion(fab.px, 256, crafting, 256, 89, 34, 22, 15, 102, 54); // arrow
+	blitRegion(fab.px, 256, crafting, 256, 119, 30, 26, 26, 125, 47); // bordered result slot (item at 130,52)
+	fabricatorTrim(fab.px);
+	fs.mkdirSync(path.join(ASSETS, "textures/gui/container"), { recursive: true });
+	fs.writeFileSync(path.join(ASSETS, "textures/gui/container/fabricator.png"), encodePng(256, 256, fab.px));
+	results["textures/gui/container/fabricator.png"] = fab;
+	console.log("wrote textures/gui/container/fabricator.png  (composed from crafting_table.png)");
+
+	// ---------- extractor: fuel (8,53)+flame (9,36), status text zone, arrow (110,49),
+	// ---------- 9x2 output grid (8,76)/(8,94); sprites stashed at (180,0)/(180,16)
+	const ext = scaffold(furnace);
+	blitRegion(ext.px, 256, furnace, 256, 55, 52, 18, 18, 7, 52); // fuel slot cell
+	blitRegion(ext.px, 256, furnace, 256, 56, 36, 14, 14, 9, 36); // empty flame outline
+	blitRegion(ext.px, 256, furnace, 256, 79, 34, 24, 17, 110, 49); // empty progress arrow
+	for (let r = 0; r < 2; r++)
+		for (let c = 0; c < 9; c++)
+			blitRegion(ext.px, 256, furnace, 256, 55, 52, 18, 18, 7 + 18 * c, 75 + 18 * r);
+	blitRegion(ext.px, 256, litSprite, litSprite.w, 0, 0, 14, 14, 180, 0); // lit flame fill -> u180,v0
+	blitRegion(ext.px, 256, burnSprite, burnSprite.w, 0, 0, 24, 16, 180, 16); // arrow fill -> u180,v16
+	tintRect(ext.px, 256, 180, 0, 14, 14); // the flame + arrow fills go purple too
+	tintRect(ext.px, 256, 180, 16, 24, 16);
+	fabricatorTrim(ext.px);
+	fs.writeFileSync(path.join(ASSETS, "textures/gui/container/extractor.png"), encodePng(256, 256, ext.px));
+	results["textures/gui/container/extractor.png"] = ext;
+	console.log("wrote textures/gui/container/extractor.png  (composed from furnace.png + furnace sprites)");
+
+	function fabricatorTrim(px) {
+		tintRect(px, 256, 0, 0, 176, 4);       // top edge
+		tintRect(px, 256, 0, 202, 176, 4);     // bottom edge
+		tintRect(px, 256, 0, 4, 4, 198);       // left edge
+		tintRect(px, 256, 172, 4, 4, 198);     // right edge
+	}
+}
+composeGuis();
 const icon = makeIcon(results["textures/item/vibranium_ingot.png"]);
 fs.writeFileSync(path.join(ASSETS, "icon.png"), encodePng(icon.w, icon.h, icon.px));
 console.log("wrote icon.png");
