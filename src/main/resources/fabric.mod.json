@@ -3,7 +3,7 @@
 	"id": "vibranium",
 	"version": "${version}",
 	"name": "Vibranium",
-	"description": "Adds vibranium ore to the deep underground: a rare purple gem mined like diamond, with a storage block and smelting recipes.",
+	"description": "Adds vibranium, a rare purple metal, to the deep underground: ore at 1/5 diamond rarity, raw vibranium, ingots, and storage blocks.",
 	"authors": [
 		"lilkuzco-dev"
 	],

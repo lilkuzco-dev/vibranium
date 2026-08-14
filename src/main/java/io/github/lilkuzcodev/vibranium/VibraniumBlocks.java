@@ -48,6 +48,16 @@ public final class VibraniumBlocks {
 					.strength(5.0F, 6.0F)
 					.sound(SoundType.METAL));
 
+	// Mirrors vanilla raw_iron_block: same strength, default stone sound.
+	public static final Block RAW_VIBRANIUM_BLOCK = register(
+			"raw_vibranium_block",
+			Block::new,
+			BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_PURPLE)
+					.instrument(NoteBlockInstrument.BASEDRUM)
+					.requiresCorrectToolForDrops()
+					.strength(5.0F, 6.0F));
+
 	private static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties properties) {
 		Identifier id = Vibranium.id(name);
 		ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, id);

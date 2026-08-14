@@ -1,1 +1,1 @@
-{"type":"minecraft:crafting_shaped","category":"building","key":{"#":"vibranium:vibranium_gem"},"pattern":["###","###","###"],"result":{"id":"vibranium:block_of_vibranium"}}
+{"type":"minecraft:crafting_shaped","category":"building","key":{"#":"vibranium:vibranium_ingot"},"pattern":["###","###","###"],"result":{"id":"vibranium:block_of_vibranium"}}

@@ -2,5 +2,7 @@
   "block.vibranium.vibranium_ore": "Vibranium Ore",
   "block.vibranium.deepslate_vibranium_ore": "Deepslate Vibranium Ore",
   "block.vibranium.block_of_vibranium": "Block of Vibranium",
-  "item.vibranium.vibranium_gem": "Vibranium Gem"
+  "block.vibranium.raw_vibranium_block": "Block of Raw Vibranium",
+  "item.vibranium.raw_vibranium": "Raw Vibranium",
+  "item.vibranium.vibranium_ingot": "Vibranium Ingot"
 }

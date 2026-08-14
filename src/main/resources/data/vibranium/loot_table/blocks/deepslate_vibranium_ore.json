@@ -39,7 +39,7 @@
                   "function": "minecraft:explosion_decay"
                 }
               ],
-              "name": "vibranium:vibranium_gem"
+              "name": "vibranium:raw_vibranium"
             }
           ]
         }
