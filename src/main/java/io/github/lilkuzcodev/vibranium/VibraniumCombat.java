@@ -33,8 +33,8 @@ public final class VibraniumCombat {
 	// AttackRange component — no custom hit handling.
 	public static final float SPEAR_ATTACK_DURATION = 1.0F / 1.2F; // -> exactly 1.2 attack speed
 	public static final float SPEAR_BASE_DAMAGE = 2.0F;   // 1 + 2 + 5 bonus = 8 total (sword is 9)
-	public static final float SPEAR_REACH = 5.5F;         // standard thrust reach (vanilla spears: 4.5)
-	public static final float SPEAR_CHARGED_REACH = 7.5F; // sprint/mounted lunge reach (vanilla: 6.5)
+	public static final float SPEAR_REACH = 5.5F;          // survival thrust reach (vanilla spears: 4.5)
+	public static final float SPEAR_CREATIVE_REACH = 7.5F; // creative-mode reach (vanilla spears: 6.5)
 
 	// ==================== KINETIC STRIKE CYCLE ====================
 	public static final int HITS_TO_PRIME = 6;            // hits that build charge; the NEXT (7th) hit detonates

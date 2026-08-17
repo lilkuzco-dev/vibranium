@@ -61,7 +61,7 @@ public final class KineticStrike {
 			var source = attacker instanceof Player player
 					? level.damageSources().playerAttack(player)
 					: level.damageSources().mobAttack(attacker);
-			victim.hurt(source, VibraniumCombat.STRIKE_BONUS_DAMAGE * falloff);
+			victim.hurtServer(level, source, VibraniumCombat.STRIKE_BONUS_DAMAGE * falloff);
 
 			Vec3 away = victim == target
 					? target.position().subtract(attacker.position())

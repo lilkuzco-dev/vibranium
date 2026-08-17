@@ -29,6 +29,7 @@ public class VibraniumSpearItem extends Item implements KineticCycleWeapon {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation") // 26.2 still exposes no non-deprecated custom-item tooltip hook
 	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
 		super.appendHoverText(stack, context, display, tooltip, flag);
 		KineticStrike.appendTooltip(stack, tooltip);

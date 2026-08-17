@@ -3,7 +3,7 @@
 	"id": "vibranium",
 	"version": "${version}",
 	"name": "Vibranium",
-	"description": "Adds vibranium, a rare purple metal, to the deep underground: ore at 1/5 diamond rarity, raw vibranium, ingots, and storage blocks.",
+	"description": "Adds rare underground vibranium, tier-above-netherite gear, kinetic weapons, a 5x5 fabricator, and an automated extractor.",
 	"authors": [
 		"lilkuzco-dev"
 	],

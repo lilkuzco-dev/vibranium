@@ -19,7 +19,7 @@ import net.minecraft.world.level.material.MapColor;
 public final class VibraniumBlocks {
 	// Hardness/resistance, XP (3-7) and sounds mirror vanilla diamond ore exactly.
 	// The required tool tier is data-driven, NOT set here: see
-	// src/main/resources/data/minecraft/tags/block/needs_iron_tool.json
+	// src/main/resources/data/minecraft/tags/block/needs_diamond_tool.json
 	public static final Block VIBRANIUM_ORE = register(
 			"vibranium_ore",
 			properties -> new DropExperienceBlock(UniformInt.of(3, 7), properties),

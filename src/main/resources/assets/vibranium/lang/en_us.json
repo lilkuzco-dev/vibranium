@@ -28,5 +28,6 @@
   "gui.vibranium.extractor.halt_unbreakable": "Stopped: unbreakable block",
   "gui.vibranium.extractor.done": "Finished: reached the bottom",
   "gui.vibranium.extractor.full": "Paused: inventory full",
-  "gui.vibranium.extractor.boost": "Vibranium boost: 4x speed"
+  "gui.vibranium.extractor.boost": "Vibranium boost: 4x speed",
+  "tag.item.vibranium.vibranium_tool_materials": "Vibranium Tool Materials"
 }

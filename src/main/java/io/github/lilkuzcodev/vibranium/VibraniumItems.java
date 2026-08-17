@@ -46,7 +46,7 @@ public final class VibraniumItems {
 							1.2F, 0.4F, 2.5F, 9.0F, 5.5F, 5.1F, 8.75F, 4.6F)
 					.component(net.minecraft.core.component.DataComponents.ATTACK_RANGE,
 							new net.minecraft.world.item.component.AttackRange(2.0F, VibraniumCombat.SPEAR_REACH,
-									2.0F, VibraniumCombat.SPEAR_CHARGED_REACH, 0.125F, 0.5F))
+									2.0F, VibraniumCombat.SPEAR_CREATIVE_REACH, 0.125F, 0.5F))
 					.attributes(net.minecraft.world.item.component.ItemAttributeModifiers.builder()
 							.add(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE,
 									new net.minecraft.world.entity.ai.attributes.AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID,
