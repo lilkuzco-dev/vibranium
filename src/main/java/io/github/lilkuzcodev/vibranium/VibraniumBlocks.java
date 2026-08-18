@@ -1,14 +1,7 @@
 package io.github.lilkuzcodev.vibranium;
 
 import java.util.function.Function;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.valueproviders.UniformInt;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -108,13 +101,7 @@ public final class VibraniumBlocks {
 					.lightLevel(state -> state.getValue(ExtractorBlock.LIT) ? 7 : 0));
 
 	private static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties properties) {
-		Identifier id = Vibranium.id(name);
-		ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, id);
-		Block block = Registry.register(BuiltInRegistries.BLOCK, blockKey, factory.apply(properties.setId(blockKey)));
-		ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, id);
-		Registry.register(BuiltInRegistries.ITEM, itemKey,
-				new BlockItem(block, new Item.Properties().useBlockDescriptionPrefix().setId(itemKey)));
-		return block;
+		return Registration.block(name, factory, properties);
 	}
 
 	public static void init() {

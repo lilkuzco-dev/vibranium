@@ -1,6 +1,7 @@
 package io.github.lilkuzcodev.vibranium;
 
 import java.util.Map;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
@@ -17,6 +18,9 @@ import net.minecraft.world.item.equipment.EquipmentAssets;
  * Every combat-related tuning knob in one place.
  */
 public final class VibraniumCombat {
+	/** Progression rank. Netherite is below this; godite ({@link GoditeCombat#TIER}) is above. */
+	public static final int TIER = 1;
+
 	// ======================= VIBRANIUM WEAPON TIER =======================
 	// Vanilla damage math: displayed attack damage = 1 (player) + weapon baseline
 	// + material DAMAGE_BONUS. Displayed speed = 4 + weapon speed baseline.
@@ -93,6 +97,22 @@ public final class VibraniumCombat {
 	public static final boolean ENERGY_BALL_BREAKS_TERRAIN = true; // false = entity damage only, no crater
 	public static final int ENERGY_BALL_STACK_SIZE = 16;           // like ender pearls
 	// Recipe yield (8) lives in data/vibranium/recipe/vibranium_energy_ball.json ("count": 8).
+
+	// ==================== THE TWO CYCLE PROFILES ====================
+	// The constants above are the tuning; these two objects are what the shared
+	// KineticStrike/KineticWard machinery actually reads. Godite's equivalents live in
+	// GoditeCombat and differ only in their numbers — no second copy of the mechanic.
+	public static final KineticProfile VIBRANIUM_STRIKE = new KineticProfile(
+			TIER, HITS_TO_PRIME, STRIKE_RADIUS, STRIKE_BONUS_DAMAGE, STRIKE_KNOCKBACK, STRIKE_VERTICAL,
+			STRIKE_FALLOFF, DECAY_WINDOW_TICKS, PARTICLE_THRESHOLD, true,
+			"item.vibranium.kinetic_charge", "item.vibranium.kinetic_primed",
+			ChatFormatting.DARK_PURPLE, ChatFormatting.LIGHT_PURPLE, false);
+
+	public static final KineticProfile VIBRANIUM_WARD = new KineticProfile(
+			TIER, WARD_HITS_TO_PRIME, WARD_RADIUS, WARD_BURST_DAMAGE, WARD_KNOCKBACK, WARD_VERTICAL,
+			WARD_FALLOFF, WARD_DECAY_WINDOW_TICKS, WARD_PARTICLE_THRESHOLD, WARD_ATTACKS_ONLY,
+			"item.vibranium.kinetic_ward", "item.vibranium.kinetic_ward_primed",
+			ChatFormatting.DARK_PURPLE, ChatFormatting.LIGHT_PURPLE, false);
 
 	/** Anvil repair uses this tag (data/vibranium/tags/item/vibranium_tool_materials.json = the ingot). */
 	public static final TagKey<Item> VIBRANIUM_TOOL_MATERIALS =

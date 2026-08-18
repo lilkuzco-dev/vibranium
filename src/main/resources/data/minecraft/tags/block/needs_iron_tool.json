@@ -1,6 +1,8 @@
 {
   "values": [
     "vibranium:block_of_vibranium",
-    "vibranium:raw_vibranium_block"
+    "vibranium:raw_vibranium_block",
+    "vibranium:block_of_godite",
+    "vibranium:raw_godite_block"
   ]
 }

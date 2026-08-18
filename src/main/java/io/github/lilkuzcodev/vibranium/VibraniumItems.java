@@ -1,10 +1,6 @@
 package io.github.lilkuzcodev.vibranium;
 
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -18,12 +14,14 @@ public final class VibraniumItems {
 
 	// Weapons: crafted directly (no smithing), fire-resistant as dropped items like netherite.
 	// Stats live in VibraniumCombat.
-	public static final Item VIBRANIUM_SWORD = register("vibranium_sword", VibraniumSwordItem::new,
+	public static final Item VIBRANIUM_SWORD = register("vibranium_sword",
+			properties -> new KineticSwordItem(properties, VibraniumCombat.VIBRANIUM_STRIKE),
 			new Item.Properties()
 					.sword(VibraniumCombat.VIBRANIUM_MATERIAL, VibraniumCombat.SWORD_BASE_DAMAGE, VibraniumCombat.SWORD_ATTACK_SPEED)
 					.fireResistant());
 	public static final Item VIBRANIUM_AXE = register("vibranium_axe",
-			properties -> new VibraniumAxeItem(VibraniumCombat.VIBRANIUM_MATERIAL, VibraniumCombat.AXE_BASE_DAMAGE, VibraniumCombat.AXE_ATTACK_SPEED, properties),
+			properties -> new KineticAxeItem(VibraniumCombat.VIBRANIUM_MATERIAL, VibraniumCombat.AXE_BASE_DAMAGE,
+					VibraniumCombat.AXE_ATTACK_SPEED, properties, VibraniumCombat.VIBRANIUM_STRIKE),
 			new Item.Properties().fireResistant());
 	public static final Item VIBRANIUM_ENERGY_BALL = register("vibranium_energy_ball", KineticEnergyBallItem::new,
 			new Item.Properties().stacksTo(VibraniumCombat.ENERGY_BALL_STACK_SIZE));
@@ -42,19 +40,24 @@ public final class VibraniumItems {
 	// kinetic WARD cycle — the strike cycle in reverse, counting hits taken.
 	// humanoidArmor() supplies durability, defense/toughness/knockback attributes,
 	// diamond enchantability, the equippable component and ingot anvil repair.
-	public static final Item VIBRANIUM_HELMET = register("vibranium_helmet", VibraniumArmorItem::new,
+	public static final Item VIBRANIUM_HELMET = register("vibranium_helmet",
+			properties -> new KineticArmorItem(properties, VibraniumCombat.VIBRANIUM_WARD),
 			new Item.Properties().humanoidArmor(VibraniumCombat.VIBRANIUM_ARMOR_MATERIAL, ArmorType.HELMET).fireResistant());
-	public static final Item VIBRANIUM_CHESTPLATE = register("vibranium_chestplate", VibraniumArmorItem::new,
+	public static final Item VIBRANIUM_CHESTPLATE = register("vibranium_chestplate",
+			properties -> new KineticArmorItem(properties, VibraniumCombat.VIBRANIUM_WARD),
 			new Item.Properties().humanoidArmor(VibraniumCombat.VIBRANIUM_ARMOR_MATERIAL, ArmorType.CHESTPLATE).fireResistant());
-	public static final Item VIBRANIUM_LEGGINGS = register("vibranium_leggings", VibraniumArmorItem::new,
+	public static final Item VIBRANIUM_LEGGINGS = register("vibranium_leggings",
+			properties -> new KineticArmorItem(properties, VibraniumCombat.VIBRANIUM_WARD),
 			new Item.Properties().humanoidArmor(VibraniumCombat.VIBRANIUM_ARMOR_MATERIAL, ArmorType.LEGGINGS).fireResistant());
-	public static final Item VIBRANIUM_BOOTS = register("vibranium_boots", VibraniumArmorItem::new,
+	public static final Item VIBRANIUM_BOOTS = register("vibranium_boots",
+			properties -> new KineticArmorItem(properties, VibraniumCombat.VIBRANIUM_WARD),
 			new Item.Properties().humanoidArmor(VibraniumCombat.VIBRANIUM_ARMOR_MATERIAL, ArmorType.BOOTS).fireResistant());
 
 	// Extended-reach spear: vanilla 26.2 spear properties (kinetic-charge component,
 	// piercing, STAB swing; timing params mirror the netherite spear), with our
 	// attack range and damage attributes swapped in from the tuning block.
-	public static final Item VIBRANIUM_SPEAR = register("vibranium_spear", VibraniumSpearItem::new,
+	public static final Item VIBRANIUM_SPEAR = register("vibranium_spear",
+			properties -> new KineticSpearItem(properties, VibraniumCombat.VIBRANIUM_STRIKE),
 			new Item.Properties()
 					.spear(VibraniumCombat.VIBRANIUM_MATERIAL, VibraniumCombat.SPEAR_ATTACK_DURATION,
 							1.2F, 0.4F, 2.5F, 9.0F, 5.5F, 5.1F, 8.75F, 4.6F)
@@ -80,8 +83,7 @@ public final class VibraniumItems {
 	}
 
 	private static Item register(String name, java.util.function.Function<Item.Properties, Item> factory, Item.Properties properties) {
-		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Vibranium.id(name));
-		return Registry.register(BuiltInRegistries.ITEM, key, factory.apply(properties.setId(key)));
+		return Registration.item(name, factory, properties);
 	}
 
 	public static void init() {

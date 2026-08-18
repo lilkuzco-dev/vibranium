@@ -13,9 +13,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 /**
- * {@code /vibranium_census <chunkRadius>} — counts vibranium and diamond ore blocks in the
- * square of chunks around the command source, generating chunks on demand. Diamond is counted
- * too as a control, so the measured rarity ratio can be compared against vanilla.
+ * {@code /vibranium_census <chunkRadius>} — counts vibranium, godite and diamond ore blocks in
+ * the square of chunks around the command source, generating chunks on demand. Diamond is
+ * counted too as a control, so the measured rarity ratios can be compared against vanilla:
+ * the targets are 5:1 diamond-to-vibranium and 5:1 vibranium-to-godite.
  */
 public final class VibraniumCensusCommand {
 	public static void init() {
@@ -30,6 +31,7 @@ public final class VibraniumCensusCommand {
 		ServerLevel level = source.getLevel();
 		ChunkPos center = ChunkPos.containing(BlockPos.containing(source.getPosition()));
 		long vibranium = 0;
+		long godite = 0;
 		long diamond = 0;
 		long veinstone = 0;
 		long rawBlocks = 0;
@@ -51,6 +53,8 @@ public final class VibraniumCensusCommand {
 							if (state.is(VibraniumBlocks.VIBRANIUM_ORE) || state.is(VibraniumBlocks.DEEPSLATE_VIBRANIUM_ORE)) {
 								vibranium++;
 								chunkFamily++;
+							} else if (state.is(GoditeBlocks.GODITE_ORE) || state.is(GoditeBlocks.DEEPSLATE_GODITE_ORE)) {
+								godite++;
 							} else if (state.is(VibraniumBlocks.VIBRANIUM_VEINSTONE)) {
 								veinstone++;
 								chunkFamily++;
@@ -71,13 +75,17 @@ public final class VibraniumCensusCommand {
 		spikes.sort((a, b) -> Long.compare(b.count(), a.count()));
 		final int chunkCount = chunks;
 		final long vib = vibranium;
+		final long god = godite;
 		final long dia = diamond;
 		final long vein = veinstone;
 		final long raw = rawBlocks;
 		source.sendSuccess(() -> Component.literal(String.format(
-				"Census over %d chunks: vibranium=%d (%.3f/chunk), diamond=%d (%.3f/chunk), diamond:vibranium = %.1f:1; veinstone=%d, raw_blocks=%d",
-				chunkCount, vib, (double) vib / chunkCount, dia, (double) dia / chunkCount,
-				vib == 0 ? 0.0 : (double) dia / vib, vein, raw)), false);
+				"Census over %d chunks: vibranium=%d (%.3f/chunk), godite=%d (%.3f/chunk), diamond=%d (%.3f/chunk); "
+						+ "diamond:vibranium = %.1f:1, vibranium:godite = %.1f:1, diamond:godite = %.1f:1; veinstone=%d, raw_blocks=%d",
+				chunkCount, vib, (double) vib / chunkCount, god, (double) god / chunkCount, dia, (double) dia / chunkCount,
+				vib == 0 ? 0.0 : (double) dia / vib,
+				god == 0 ? 0.0 : (double) vib / god,
+				god == 0 ? 0.0 : (double) dia / god, vein, raw)), false);
 		StringBuilder top = new StringBuilder("Densest chunks (vibranium family): ");
 		for (int i = 0; i < Math.min(3, spikes.size()); i++) {
 			Spike spike = spikes.get(i);

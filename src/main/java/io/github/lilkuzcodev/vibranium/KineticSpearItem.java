@@ -6,16 +6,28 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import org.jspecify.annotations.Nullable;
 
-public class VibraniumAxeItem extends AxeItem implements KineticCycleWeapon {
-	public VibraniumAxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties properties) {
-		super(material, attackDamage, attackSpeed, properties);
+/**
+ * Extended-reach thrusting weapon: vanilla 26.2 spear mechanics (built in the item
+ * properties — see VibraniumItems / GoditeItems) plus the kinetic strike cycle shared
+ * with the sword and axe.
+ */
+public class KineticSpearItem extends Item implements KineticCycleWeapon {
+	private final KineticProfile profile;
+
+	public KineticSpearItem(Properties properties, KineticProfile profile) {
+		super(properties);
+		this.profile = profile;
+	}
+
+	@Override
+	public KineticProfile kineticProfile() {
+		return profile;
 	}
 
 	@Override

@@ -21,6 +21,13 @@ const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 
 const PURPLE_HUE = 270 / 360;
+// Godite's whole look: the same vanilla art, the same recolor, but the hue SWEPT across the
+// metal instead of held at one value — one full turn of the wheel from one end of the piece
+// to the other, so a godite ingot is a rainbow and a godite blade grades through the spectrum.
+// Every other knob (which pixels move, how saturation is synthesized on grays, luminance) is
+// untouched: godite is literally vibranium's texture pipeline with a hue function in place of
+// a constant. See recolor() for why the sweep is measured over the moving pixels.
+const RAINBOW_HUE = (t) => t;
 
 // ---------- locate the vanilla client jar ----------
 function findClientJar() {
@@ -198,23 +205,40 @@ function hslToRgb(h, s, l) {
 }
 
 // mode "saturated":  recolor only clearly-colored pixels (ore: gems yes, stone no)
-// mode "all":        recolor every opaque pixel; grays gain purple saturation
+// mode "all":        recolor every opaque pixel; grays gain saturation
 // mode "cyan-only":  recolor only cyan/teal-hued pixels (weapon blades/heads),
 //                    leaving wooden handles and other materials untouched
 // opts.brighten:     push bright pixels further toward white (glowing-energy look)
+// opts.hue:          a constant hue (default: vibranium's purple), or a function of the
+//                    sweep position t in [0,1] — which is how godite gets its rainbow
+
+// Which pixels a mode moves. Split out because the rainbow has to MEASURE the moving
+// pixels before it can recolor them, so the rule is needed in two places.
+function movesUnder(mode, h, s) {
+	if (mode === "saturated") return s >= 0.14;      // stone stays stone
+	if (mode === "cyan-only") return s >= 0.14 && h >= 0.35 && h <= 0.62; // only the cyan family
+	return true;
+}
+
 function recolor(img, mode, opts = {}) {
+	const hue = opts.hue ?? PURPLE_HUE;
+	// A positional hue has to sweep across THE PIXELS THAT MOVE, not across the sprite's
+	// bounding box. Item sprites are mostly empty and mostly diagonal: a sword blade lies
+	// along one diagonal, so an x+y gradient hands the whole blade a single colour (it did,
+	// on the first attempt). The sweep therefore runs along the anti-diagonal x-y, and is
+	// EQUALISED — each step of the wheel gets the same number of pixels — because a raw
+	// min/max stretch piles most of a chubby sprite like the ingot into the middle third of
+	// the spectrum and never reaches the reds at either end.
+	const sweep = typeof hue === "function" ? equalisedSweep(img, mode) : null;
 	const out = Buffer.from(img.px);
 	for (let i = 0; i < out.length; i += 4) {
 		if (out[i + 3] < 8) continue;
 		const [h, s, l] = rgbToHsl(out[i], out[i + 1], out[i + 2]);
+		if (!movesUnder(mode, h, s)) continue;
 		let ns = s;
 		let nl = l;
-		if (mode === "saturated") {
-			if (s < 0.14) continue; // stone stays stone
-		} else if (mode === "cyan-only") {
-			if (s < 0.14 || h < 0.35 || h > 0.62) continue; // only the cyan family moves
-		} else if (s < 0.1) {
-			// gray metal: synthesize purple saturation, gentler at the extremes
+		if (mode !== "saturated" && mode !== "cyan-only" && s < 0.1) {
+			// gray metal: synthesize saturation, gentler at the extremes
 			ns = l > 0.9 || l < 0.12 ? 0.22 : 0.42;
 		}
 		if (opts.brighten) {
@@ -222,12 +246,36 @@ function recolor(img, mode, opts = {}) {
 			nl = Math.min(0.92, 0.15 + l * 1.4);
 			if (l > 0.35) nl = Math.min(0.97, nl + 0.25);
 		}
-		const [r, g, b] = hslToRgb(PURPLE_HUE, ns, nl);
+		const [r, g, b] = hslToRgb(sweep === null ? hue : hue(sweep(i / 4)), ns, nl);
 		out[i] = r;
 		out[i + 1] = g;
 		out[i + 2] = b;
 	}
 	return { w: img.w, h: img.h, px: out };
+}
+
+// Maps a pixel index to its position 0..1 along the sweep, with every band of the wheel
+// covering an equal share of the moving pixels (a cumulative histogram over x-y).
+function equalisedSweep(img, mode) {
+	const counts = new Map();
+	const diagonal = (pixel) => (pixel % img.w) - Math.floor(pixel / img.w);
+	let total = 0;
+	for (let i = 0; i < img.px.length; i += 4) {
+		if (img.px[i + 3] < 8) continue;
+		const [h, s] = rgbToHsl(img.px[i], img.px[i + 1], img.px[i + 2]);
+		if (!movesUnder(mode, h, s)) continue;
+		const d = diagonal(i / 4);
+		counts.set(d, (counts.get(d) ?? 0) + 1);
+		total++;
+	}
+	const position = new Map();
+	let seen = 0;
+	for (const d of [...counts.keys()].sort((a, b) => a - b)) {
+		const count = counts.get(d);
+		position.set(d, total > 0 ? (seen + count / 2) / total : 0); // midpoint of this step's band
+		seen += count;
+	}
+	return (pixel) => position.get(diagonal(pixel)) ?? 0;
 }
 
 function upscale(img, factor) {
@@ -307,12 +355,40 @@ const JOBS = [
 	{ trSrc: "block/machines/tier1_machines/grinder_front_on.png", out: "textures/block/vibranium_extractor_drill_on.png", mode: "all",
 		mcmeta: "block/machines/tier1_machines/grinder_front_on.png.mcmeta" },
 ];
+
+// ---- godite (v1.8.0): every vibranium gear/metal job again, rainbow instead of purple ----
+// Deliberately the SAME vanilla sources as the vibranium jobs above: godite is a rehue of
+// vibranium, so anything else here would make the two metals different art, not different hue.
+const GODITE_JOBS = [
+	{ src: "block/diamond_ore", out: "textures/block/godite_ore.png", mode: "saturated" },
+	{ src: "block/deepslate_diamond_ore", out: "textures/block/deepslate_godite_ore.png", mode: "saturated" },
+	{ src: "block/diamond_block", out: "textures/block/block_of_godite.png", mode: "all" },
+	{ src: "item/iron_ingot", out: "textures/item/godite_ingot.png", mode: "all" },
+	{ src: "item/raw_iron", out: "textures/item/raw_godite.png", mode: "all" },
+	{ src: "block/raw_iron_block", out: "textures/block/raw_godite_block.png", mode: "all" },
+	{ src: "item/diamond_sword", out: "textures/item/godite_sword.png", mode: "cyan-only" },
+	{ src: "item/diamond_axe", out: "textures/item/godite_axe.png", mode: "cyan-only" },
+	{ src: "item/diamond_helmet", out: "textures/item/godite_helmet.png", mode: "all" },
+	{ src: "item/diamond_chestplate", out: "textures/item/godite_chestplate.png", mode: "all" },
+	{ src: "item/diamond_leggings", out: "textures/item/godite_leggings.png", mode: "all" },
+	{ src: "item/diamond_boots", out: "textures/item/godite_boots.png", mode: "all" },
+	{ src: "entity/equipment/humanoid/diamond", out: "textures/entity/equipment/humanoid/godite.png", mode: "all" },
+	{ src: "entity/equipment/humanoid_baby/diamond", out: "textures/entity/equipment/humanoid_baby/godite.png", mode: "all" },
+	{ src: "entity/equipment/humanoid_leggings/diamond", out: "textures/entity/equipment/humanoid_leggings/godite.png", mode: "all" },
+	{ src: "item/diamond_pickaxe", out: "textures/item/godite_pickaxe.png", mode: "cyan-only" },
+	{ src: "item/diamond_shovel", out: "textures/item/godite_shovel.png", mode: "cyan-only" },
+	{ src: "item/diamond_hoe", out: "textures/item/godite_hoe.png", mode: "cyan-only" },
+	{ src: "item/diamond_spear", out: "textures/item/godite_spear.png", mode: "cyan-only" },
+	{ src: "item/diamond_spear_in_hand", out: "textures/item/godite_spear_in_hand.png", mode: "cyan-only" },
+].map((job) => ({ ...job, hue: RAINBOW_HUE }));
+JOBS.push(...GODITE_JOBS);
+
 const trDir = findTechRebornDir();
 console.log(`techreborn src: ${trDir}`);
 const results = {};
 for (const job of JOBS) {
 	const source = job.trSrc ? readFromTechReborn(trDir, job.trSrc) : readFromJar(jar, `assets/minecraft/textures/${job.src}.png`);
-	const img = recolor(decodePng(source), job.mode, { brighten: job.brighten });
+	const img = recolor(decodePng(source), job.mode, { brighten: job.brighten, hue: job.hue });
 	results[job.out] = img;
 	const file = path.join(ASSETS, job.out);
 	fs.mkdirSync(path.dirname(file), { recursive: true });

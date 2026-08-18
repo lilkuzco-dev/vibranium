@@ -6,15 +6,25 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import org.jspecify.annotations.Nullable;
 
-public class VibraniumSwordItem extends Item implements KineticCycleWeapon {
-	public VibraniumSwordItem(Properties properties) {
-		super(properties);
+/** An axe that runs a kinetic strike cycle. See {@link KineticSwordItem}. */
+public class KineticAxeItem extends AxeItem implements KineticCycleWeapon {
+	private final KineticProfile profile;
+
+	public KineticAxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties properties, KineticProfile profile) {
+		super(material, attackDamage, attackSpeed, properties);
+		this.profile = profile;
+	}
+
+	@Override
+	public KineticProfile kineticProfile() {
+		return profile;
 	}
 
 	@Override

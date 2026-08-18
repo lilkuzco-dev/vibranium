@@ -7,6 +7,10 @@
     "vibranium:vibranium_veinstone",
     "vibranium:vibranium_crystal_cluster",
     "vibranium:vibranium_fabricator",
-    "vibranium:vibranium_extractor"
+    "vibranium:vibranium_extractor",
+    "vibranium:godite_ore",
+    "vibranium:deepslate_godite_ore",
+    "vibranium:block_of_godite",
+    "vibranium:raw_godite_block"
   ]
 }

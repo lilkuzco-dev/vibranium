@@ -29,15 +29,25 @@
 //  large blob.
 // ============================================================================
 const DENSITY_DIVISOR = 5; // vibranium is this many times rarer than diamond
+const GODITE_DIVISOR = 5;  // godite is this many times rarer AGAIN than vibranium
+
+// The two metals. Everything below is generated once per entry, so the ONLY difference
+// between vibranium's ore and godite's is the divisor on this table: godite comes out at
+// 5 x 5 = 25 times rarer than diamond, which is exactly "five times harder to find than
+// vibranium" measured the same way vibranium's own 5:1 was (/vibranium_census).
+const MATERIALS = [
+	{ name: "vibranium", divisor: DENSITY_DIVISOR, ore: "vibranium:vibranium_ore", deepslate: "vibranium:deepslate_vibranium_ore" },
+	{ name: "godite", divisor: DENSITY_DIVISOR * GODITE_DIVISOR, ore: "vibranium:godite_ore", deepslate: "vibranium:deepslate_godite_ore" },
+];
 
 // Per-batch definitions (counts/sizes/discards = vanilla diamond's own values).
 // rarity is "1 in N chunks"; a rarity of 1 means every chunk.
-const BATCHES = {
-	small:  { count: 7, rarity: DENSITY_DIVISOR,     size: 4,  discard: 0.5, height: "trapezoid" },
-	medium: { count: 2, rarity: DENSITY_DIVISOR,     size: 8,  discard: 0.5, height: "uniform" },
-	large:  { count: 1, rarity: 9 * DENSITY_DIVISOR, size: 12, discard: 0.7, height: "trapezoid" },
-	buried: { count: 4, rarity: DENSITY_DIVISOR,     size: 8,  discard: 1.0, height: "trapezoid" },
-};
+const batchesFor = (divisor) => ({
+	small:  { count: 7, rarity: divisor,     size: 4,  discard: 0.5, height: "trapezoid" },
+	medium: { count: 2, rarity: divisor,     size: 8,  discard: 0.5, height: "uniform" },
+	large:  { count: 1, rarity: 9 * divisor, size: 12, discard: 0.7, height: "trapezoid" },
+	buried: { count: 4, rarity: divisor,     size: 8,  discard: 1.0, height: "trapezoid" },
+});
 // ============================================================================
 
 // ============================================================================
@@ -65,8 +75,6 @@ const PIT_CRACK_CHANCE = 0.95;      // like amethyst geodes: usually has a visib
 const fs = require("node:fs");
 const path = require("node:path");
 
-const ORE = "vibranium:vibranium_ore";
-const DEEPSLATE_ORE = "vibranium:deepslate_vibranium_ore";
 const HEIGHTS = {
 	// same trapezoid as diamond: peak density at the world bottom
 	trapezoid: {
@@ -80,15 +88,15 @@ const HEIGHTS = {
 	},
 };
 
-function configured(batch) {
+function configured(batch, material) {
 	return {
 		type: "minecraft:ore",
 		config: {
 			discard_chance_on_air_exposure: batch.discard,
 			size: batch.size,
 			targets: [
-				{ state: { Name: ORE }, target: { predicate_type: "minecraft:tag_match", tag: "minecraft:stone_ore_replaceables" } },
-				{ state: { Name: DEEPSLATE_ORE }, target: { predicate_type: "minecraft:tag_match", tag: "minecraft:deepslate_ore_replaceables" } },
+				{ state: { Name: material.ore }, target: { predicate_type: "minecraft:tag_match", tag: "minecraft:stone_ore_replaceables" } },
+				{ state: { Name: material.deepslate }, target: { predicate_type: "minecraft:tag_match", tag: "minecraft:deepslate_ore_replaceables" } },
 			],
 		},
 	};
@@ -104,12 +112,14 @@ function placed(configuredId, batch) {
 // File names follow vanilla's pattern: the "small" batch is the unsuffixed one.
 const WORLDGEN = path.join(__dirname, "..", "src/main/resources/data/vibranium/worldgen");
 const files = {};
-for (const [name, batch] of Object.entries(BATCHES)) {
-	files[`configured_feature/ore_vibranium_${name}.json`] = configured(batch);
-	const placedName = name === "small" ? "ore_vibranium" : `ore_vibranium_${name}`;
-	files[`placed_feature/${placedName}.json`] = placed(`vibranium:ore_vibranium_${name}`, batch);
+for (const material of MATERIALS) {
+	for (const [name, batch] of Object.entries(batchesFor(material.divisor))) {
+		files[`configured_feature/ore_${material.name}_${name}.json`] = configured(batch, material);
+		const placedName = name === "small" ? `ore_${material.name}` : `ore_${material.name}_${name}`;
+		files[`placed_feature/${placedName}.json`] = placed(`vibranium:ore_${material.name}_${name}`, batch);
+	}
 }
-// ---------- vibranium pit (geode feature) ----------
+// ---------- vibranium pit (geode feature) — vibranium only; godite is plain ore ----------
 files["configured_feature/vibranium_pit.json"] = {
 	type: "minecraft:geode",
 	config: {

@@ -1,0 +1,19 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "vibranium:godite"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "vibranium:godite"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "vibranium:godite"
+      }
+    ]
+  }
+}

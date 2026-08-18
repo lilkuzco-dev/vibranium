@@ -1,6 +1,8 @@
 {
   "values": [
     "vibranium:vibranium_ore",
-    "vibranium:deepslate_vibranium_ore"
+    "vibranium:deepslate_vibranium_ore",
+    "vibranium:godite_ore",
+    "vibranium:deepslate_godite_ore"
   ]
 }

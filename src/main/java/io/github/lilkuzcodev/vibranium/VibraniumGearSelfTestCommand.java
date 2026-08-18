@@ -15,7 +15,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantable;
 
 /**
@@ -182,23 +181,13 @@ public final class VibraniumGearSelfTestCommand {
 		return 0;
 	}
 
-	/** The item's total ADD_VALUE for one attribute in one slot, straight off its component. */
+	/** Both self-tests read registered stats the same way — see {@link GearStats}. */
 	private static double attribute(Item item, EquipmentSlot slot, net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute) {
-		ItemAttributeModifiers modifiers = new ItemStack(item).get(DataComponents.ATTRIBUTE_MODIFIERS);
-		if (modifiers == null) {
-			return 0.0;
-		}
-		double[] total = {0.0};
-		modifiers.forEach(slot, (held, modifier) -> {
-			if (held.equals(attribute)) {
-				total[0] += modifier.amount();
-			}
-		});
-		return total[0];
+		return GearStats.attribute(item, slot, attribute);
 	}
 
 	private static String key(Item item) {
-		return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).toString();
+		return GearStats.key(item);
 	}
 
 	private VibraniumGearSelfTestCommand() {

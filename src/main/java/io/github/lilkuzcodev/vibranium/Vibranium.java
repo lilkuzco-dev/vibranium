@@ -18,13 +18,18 @@ public class Vibranium implements ModInitializer {
 		VibraniumComponents.init(); // before anything touches ItemStacks
 		VibraniumBlocks.init();
 		VibraniumItems.init();
+		GoditeBlocks.init();
+		GoditeItems.init();
 		VibraniumMachines.init();
 		VibraniumEntities.init();
+		KineticLaunch.init(); // end-of-tick impulse queue, before anything can queue to it
 		KineticWard.init(); // armor damage listener; items must already be registered
 		VibraniumWorldgen.init();
+		GoditeWorldgen.init();
 		VibraniumCensusCommand.init();
 		VibraniumSelfTestCommand.init();
 		VibraniumGearSelfTestCommand.init();
+		GoditeSelfTestCommand.init();
 		LOGGER.info("Vibranium initialized");
 	}
 }
