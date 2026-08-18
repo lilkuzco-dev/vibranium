@@ -3,7 +3,7 @@
 	"id": "vibranium",
 	"version": "${version}",
 	"name": "Vibranium",
-	"description": "Adds rare underground vibranium, tier-above-netherite gear, kinetic weapons, a 5x5 fabricator, and an automated extractor.",
+	"description": "Adds rare underground vibranium, tier-above-netherite tools, weapons and armor, kinetic weapons and wards, a 5x5 fabricator, and an automated extractor.",
 	"authors": [
 		"lilkuzco-dev"
 	],

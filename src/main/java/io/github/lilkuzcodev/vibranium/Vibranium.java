@@ -20,9 +20,11 @@ public class Vibranium implements ModInitializer {
 		VibraniumItems.init();
 		VibraniumMachines.init();
 		VibraniumEntities.init();
+		KineticWard.init(); // armor damage listener; items must already be registered
 		VibraniumWorldgen.init();
 		VibraniumCensusCommand.init();
 		VibraniumSelfTestCommand.init();
+		VibraniumGearSelfTestCommand.init();
 		LOGGER.info("Vibranium initialized");
 	}
 }

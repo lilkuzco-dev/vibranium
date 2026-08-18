@@ -274,6 +274,17 @@ const JOBS = [
 	{ src: "item/diamond_axe", out: "textures/item/vibranium_axe.png", mode: "cyan-only" },
 	// energy ball: pearl -> purple with the central highlight glowing toward white
 	{ src: "item/ender_pearl", out: "textures/item/vibranium_energy_ball.png", mode: "all", brighten: true },
+	// armor: the whole piece is the metal (no wooden handle to preserve), so it
+	// recolors like the ingot — every opaque pixel goes purple, grays gain saturation
+	{ src: "item/diamond_helmet", out: "textures/item/vibranium_helmet.png", mode: "all" },
+	{ src: "item/diamond_chestplate", out: "textures/item/vibranium_chestplate.png", mode: "all" },
+	{ src: "item/diamond_leggings", out: "textures/item/vibranium_leggings.png", mode: "all" },
+	{ src: "item/diamond_boots", out: "textures/item/vibranium_boots.png", mode: "all" },
+	// worn-armor layers (26.x equipment assets; NOT 16x16 — the decoder reads each
+	// source's real IHDR size, so these stay 64x32 / 64x32 / 64x32 on the way through)
+	{ src: "entity/equipment/humanoid/diamond", out: "textures/entity/equipment/humanoid/vibranium.png", mode: "all" },
+	{ src: "entity/equipment/humanoid_baby/diamond", out: "textures/entity/equipment/humanoid_baby/vibranium.png", mode: "all" },
+	{ src: "entity/equipment/humanoid_leggings/diamond", out: "textures/entity/equipment/humanoid_leggings/vibranium.png", mode: "all" },
 	// tools + spear: cyan heads -> purple, wooden handles untouched
 	{ src: "item/diamond_pickaxe", out: "textures/item/vibranium_pickaxe.png", mode: "cyan-only" },
 	{ src: "item/diamond_shovel", out: "textures/item/vibranium_shovel.png", mode: "cyan-only" },

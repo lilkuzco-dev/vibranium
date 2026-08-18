@@ -1,11 +1,17 @@
 package io.github.lilkuzcodev.vibranium;
 
+import java.util.Map;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAsset;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 
 /**
  * Every combat-related tuning knob in one place.
@@ -46,6 +52,42 @@ public final class VibraniumCombat {
 	public static final int DECAY_WINDOW_TICKS = 600;     // charges reset after 30 s without landing a hit
 	public static final int PARTICLE_THRESHOLD = 4;       // charge count where the buildup particle cue starts
 
+	// ======================= VIBRANIUM ARMOR =======================
+	// A tier above netherite, the same way the weapons are: slightly higher on every
+	// axis rather than a new mechanic. Vanilla for reference —
+	//   netherite: 3/6/8/3 = 20 armor, toughness 3.0, kb 0.1, durability x37, ench 15
+	//   diamond:   3/6/8/3 = 20 armor, toughness 2.0, kb 0.0, durability x33, ench 10
+	// NOTE on armor points: CombatRules clamps EFFECTIVE armor to 20, so points past
+	// 20 only buy headroom against big hits — toughness is the knob that actually
+	// moves damage reduction. Both are raised here, toughness deliberately more.
+	public static final int ARMOR_DURABILITY_MULTIPLIER = 45; // netherite 37 -> helmet 495, chest 720, legs 675, boots 585
+	public static final int ARMOR_DEFENSE_HELMET = 4;         // netherite 3
+	public static final int ARMOR_DEFENSE_CHESTPLATE = 9;     // netherite 8
+	public static final int ARMOR_DEFENSE_LEGGINGS = 7;       // netherite 6
+	public static final int ARMOR_DEFENSE_BOOTS = 3;          // netherite 3  (full set: 23 vs netherite's 20)
+	public static final int ARMOR_DEFENSE_BODY = 19;          // netherite 19; unused — we ship no animal armor
+	public static final float ARMOR_TOUGHNESS = 4.0F;         // netherite 3.0
+	public static final float ARMOR_KNOCKBACK_RESISTANCE = 0.12F; // per piece; netherite 0.1 (full set 0.48 vs 0.4)
+	public static final int ARMOR_ENCHANTABILITY = ENCHANTABILITY; // 10 — diamond, same as the weapons
+
+	// ==================== KINETIC WARD (ARMOR) ====================
+	// The strike cycle's mirror image: the weapons count hits you LAND, the armor
+	// counts hits you TAKE, and the 7th releases the burst around the wearer.
+	// Any number of vibranium pieces participate and they share one count (the max
+	// across worn pieces), so a full set is not four separate cycles.
+	public static final int WARD_HITS_TO_PRIME = 6;       // hits absorbed; the NEXT (7th) detonates
+	public static final double WARD_RADIUS = 4.0;         // burst radius around the WEARER (weapon strike is 3.0)
+	public static final float WARD_BURST_DAMAGE = 8.0F;   // damage at center = 4 hearts, falls off
+	public static final double WARD_KNOCKBACK = 1.6;      // horizontal launch at center
+	public static final double WARD_VERTICAL = 0.7;       // upward launch
+	public static final float WARD_FALLOFF = 0.6F;        // fraction of damage/knockback lost at the radius edge
+	public static final int WARD_DECAY_WINDOW_TICKS = 600; // charges reset after 30 s without taking a hit
+	public static final int WARD_PARTICLE_THRESHOLD = 4;  // charge count where the buildup cue starts
+	// true  = only damage with an attacker behind it counts (mobs, players, projectiles,
+	//         creeper blasts) — a "hit received", not fall damage or drowning.
+	// false = every source of damage counts.
+	public static final boolean WARD_ATTACKS_ONLY = true;
+
 	// ==================== KINETIC ENERGY BALL ====================
 	public static final float ENERGY_BALL_EXPLOSION_POWER = 20.0F; // TNT is 4.0
 	public static final boolean ENERGY_BALL_BREAKS_TERRAIN = true; // false = entity damage only, no crater
@@ -61,6 +103,29 @@ public final class VibraniumCombat {
 	public static final ToolMaterial VIBRANIUM_MATERIAL = new ToolMaterial(
 			BlockTags.INCORRECT_FOR_NETHERITE_TOOL, DURABILITY, MINING_SPEED, DAMAGE_BONUS, ENCHANTABILITY,
 			VIBRANIUM_TOOL_MATERIALS);
+
+	/**
+	 * The worn-armor look: {@code assets/vibranium/equipment/vibranium.json}, which
+	 * points the humanoid / humanoid_baby / humanoid_leggings layers at our purple
+	 * recolors of the vanilla diamond sheets.
+	 */
+	public static final ResourceKey<EquipmentAsset> VIBRANIUM_ARMOR_ASSET =
+			ResourceKey.create(EquipmentAssets.ROOT_ID, Vibranium.id("vibranium"));
+
+	/** Repairs with the ingot (same tag as the tools) and equips with the netherite sound. */
+	public static final ArmorMaterial VIBRANIUM_ARMOR_MATERIAL = new ArmorMaterial(
+			ARMOR_DURABILITY_MULTIPLIER,
+			Map.of(ArmorType.HELMET, ARMOR_DEFENSE_HELMET,
+					ArmorType.CHESTPLATE, ARMOR_DEFENSE_CHESTPLATE,
+					ArmorType.LEGGINGS, ARMOR_DEFENSE_LEGGINGS,
+					ArmorType.BOOTS, ARMOR_DEFENSE_BOOTS,
+					ArmorType.BODY, ARMOR_DEFENSE_BODY),
+			ARMOR_ENCHANTABILITY,
+			SoundEvents.ARMOR_EQUIP_NETHERITE,
+			ARMOR_TOUGHNESS,
+			ARMOR_KNOCKBACK_RESISTANCE,
+			VIBRANIUM_TOOL_MATERIALS,
+			VIBRANIUM_ARMOR_ASSET);
 
 	private VibraniumCombat() {
 	}

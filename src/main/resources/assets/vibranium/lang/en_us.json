@@ -29,5 +29,11 @@
   "gui.vibranium.extractor.done": "Finished: reached the bottom",
   "gui.vibranium.extractor.full": "Paused: inventory full",
   "gui.vibranium.extractor.boost": "Vibranium boost: 4x speed",
-  "tag.item.vibranium.vibranium_tool_materials": "Vibranium Tool Materials"
+  "tag.item.vibranium.vibranium_tool_materials": "Vibranium Tool Materials",
+  "item.vibranium.vibranium_helmet": "Vibranium Helmet",
+  "item.vibranium.vibranium_chestplate": "Vibranium Chestplate",
+  "item.vibranium.vibranium_leggings": "Vibranium Leggings",
+  "item.vibranium.vibranium_boots": "Vibranium Boots",
+  "item.vibranium.kinetic_ward": "Kinetic Ward: %s/%s",
+  "item.vibranium.kinetic_ward_primed": "PRIMED — next hit taken detonates"
 }

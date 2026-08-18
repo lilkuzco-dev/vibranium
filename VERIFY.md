@@ -53,3 +53,53 @@ dependency.
 No known launch, progression, persistence, crafting, world-generation, or machine
 blocker remains after this battery. As with any game mod, this is a tested result,
 not a guarantee that no edge-case defect can ever exist.
+
+---
+
+# Vibranium 1.7.0 verification — armor
+
+Date: 2026-08-17. Same target: Minecraft 26.2, Fabric Loader 0.19.3, Fabric API
+0.157.0+26.2, Loom 1.17, JDK 25.
+
+## Build and package
+
+- `./gradlew build` — PASS, no warnings with `-Xlint:deprecation` on.
+- All 123 resource JSON files parse; the four armor recipe patterns are byte-identical
+  to vanilla's `diamond_helmet`/`chestplate`/`leggings`/`boots`.
+- `node tools/check-equipment-assets.js --jar build/libs/vibranium-1.7.0.jar` — PASS:
+  all three worn-armor layers resolve to real textures at the right sheet sizes
+  (humanoid 64x32, humanoid_baby 64x64, humanoid_leggings 64x32).
+- Generated armor textures read visually against their vanilla diamond sources: same
+  pixel structure, purple hue, correct dimensions per source (the baby sheet is 64x64,
+  not 64x32 — the generator sizes from each source's IHDR, so no truncation).
+
+## Live dev-server battery
+
+Carpet fake player `WardBot` on a flat platform; test mobs `NoAI` at measured distances.
+
+- `/vibranium_gear_selftest` — PASS. Compares all 10 vibranium gear items against their
+  diamond counterparts: identical enchantability value and identical membership across
+  all 21 `#minecraft:enchantable/*` tags.
+- Armor attributes, read live off the wearer and A/B'd against netherite on the same
+  entity — vibranium **23 armor / 16.0 toughness / 0.48 knockback**, netherite
+  **20 / 12.0 / 0.40**.
+- Kinetic ward, 7-hit cycle — PASS. Hits 1–6 raised the shared charge 1→6 with all
+  three test mobs untouched at 20.0 HP; the 7th detonated. Measured damage matched the
+  tuning constants to four decimals: a mob 2.0 blocks out took 5.5104 (falloff 0.70),
+  one 1.5 blocks out took 6.1008 (falloff 0.775), and the control at 6.5 blocks — past
+  the 4-block radius — took exactly 0.
+- Burst knockback — PASS. Velocity vectors point away from the wearer on the correct
+  axis, and the vertical component is exactly `WARD_VERTICAL x falloff` (0.49 and
+  0.5425 for the two mobs).
+- Set-wide sharing — PASS. All four worn pieces carried the same count, were cleared
+  together by the burst, and restarted together at 1 on the next hit.
+- Environmental exclusion (`WARD_ATTACKS_ONLY`) — PASS. `minecraft:fall` and
+  `minecraft:on_fire` damage left the charge at 1; an attacker-sourced hit raised it.
+- Decay — PASS. A single charge survived +12 s and +24 s and was gone at +36 s, past
+  the 600-tick window. This also confirms `inventoryTick` reaches worn armor.
+- All four armor recipes load (`/recipe give` unlocked each); 1608 recipes total, zero
+  errors, exceptions or warnings in the server log.
+
+Not covered here: the worn-armor look on a real client. The equipment-asset gate proves
+every layer resolves to a correctly-sized texture, and the item textures were read
+directly, but nobody has seen the set on a player model.

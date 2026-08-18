@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.equipment.ArmorType;
 
 public final class VibraniumItems {
 	// Metal identity, mirroring iron: the ore drops raw_vibranium, which smelts
@@ -36,6 +37,19 @@ public final class VibraniumItems {
 	public static final Item VIBRANIUM_HOE = register("vibranium_hoe",
 			properties -> new net.minecraft.world.item.HoeItem(VibraniumCombat.VIBRANIUM_MATERIAL, VibraniumCombat.HOE_BASE_DAMAGE, 0.0F, properties),
 			new Item.Properties().fireResistant());
+
+	// Armor: a tier above netherite (see VibraniumCombat's ARMOR block), running the
+	// kinetic WARD cycle — the strike cycle in reverse, counting hits taken.
+	// humanoidArmor() supplies durability, defense/toughness/knockback attributes,
+	// diamond enchantability, the equippable component and ingot anvil repair.
+	public static final Item VIBRANIUM_HELMET = register("vibranium_helmet", VibraniumArmorItem::new,
+			new Item.Properties().humanoidArmor(VibraniumCombat.VIBRANIUM_ARMOR_MATERIAL, ArmorType.HELMET).fireResistant());
+	public static final Item VIBRANIUM_CHESTPLATE = register("vibranium_chestplate", VibraniumArmorItem::new,
+			new Item.Properties().humanoidArmor(VibraniumCombat.VIBRANIUM_ARMOR_MATERIAL, ArmorType.CHESTPLATE).fireResistant());
+	public static final Item VIBRANIUM_LEGGINGS = register("vibranium_leggings", VibraniumArmorItem::new,
+			new Item.Properties().humanoidArmor(VibraniumCombat.VIBRANIUM_ARMOR_MATERIAL, ArmorType.LEGGINGS).fireResistant());
+	public static final Item VIBRANIUM_BOOTS = register("vibranium_boots", VibraniumArmorItem::new,
+			new Item.Properties().humanoidArmor(VibraniumCombat.VIBRANIUM_ARMOR_MATERIAL, ArmorType.BOOTS).fireResistant());
 
 	// Extended-reach spear: vanilla 26.2 spear properties (kinetic-charge component,
 	// piercing, STAB swing; timing params mirror the netherite spear), with our
@@ -90,6 +104,10 @@ public final class VibraniumItems {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(output -> {
 			output.insertAfter(Items.NETHERITE_SWORD, VIBRANIUM_SWORD);
 			output.insertAfter(Items.NETHERITE_SPEAR, VIBRANIUM_SPEAR);
+			output.insertAfter(Items.NETHERITE_HELMET, VIBRANIUM_HELMET);
+			output.insertAfter(Items.NETHERITE_CHESTPLATE, VIBRANIUM_CHESTPLATE);
+			output.insertAfter(Items.NETHERITE_LEGGINGS, VIBRANIUM_LEGGINGS);
+			output.insertAfter(Items.NETHERITE_BOOTS, VIBRANIUM_BOOTS);
 			output.accept(VIBRANIUM_ENERGY_BALL);
 		});
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
