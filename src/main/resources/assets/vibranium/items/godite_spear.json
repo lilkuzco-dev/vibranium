@@ -3,10 +3,55 @@
     "type": "minecraft:select",
     "property": "minecraft:display_context",
     "cases": [
-      { "model": { "type": "minecraft:model", "model": "vibranium:item/godite_spear" },
-        "when": [ "gui", "ground", "fixed", "on_shelf" ] }
+      {
+        "model": {
+          "type": "minecraft:condition",
+          "property": "minecraft:has_component",
+          "component": "minecraft:enchantments",
+          "ignore_default": true,
+          "on_true": {
+            "type": "minecraft:model",
+            "model": "vibranium:item/godite_spear",
+            "tints": [
+              {
+                "type": "minecraft:constant",
+                "value": -5855578
+              }
+            ]
+          },
+          "on_false": {
+            "type": "minecraft:model",
+            "model": "vibranium:item/godite_spear"
+          }
+        },
+        "when": [
+          "gui",
+          "ground",
+          "fixed",
+          "on_shelf"
+        ]
+      }
     ],
-    "fallback": { "type": "minecraft:model", "model": "vibranium:item/godite_spear_in_hand" }
+    "fallback": {
+      "type": "minecraft:condition",
+      "property": "minecraft:has_component",
+      "component": "minecraft:enchantments",
+      "ignore_default": true,
+      "on_true": {
+        "type": "minecraft:model",
+        "model": "vibranium:item/godite_spear_in_hand",
+        "tints": [
+          {
+            "type": "minecraft:constant",
+            "value": -5855578
+          }
+        ]
+      },
+      "on_false": {
+        "type": "minecraft:model",
+        "model": "vibranium:item/godite_spear_in_hand"
+      }
+    }
   },
   "swap_animation_scale": 1.95
 }

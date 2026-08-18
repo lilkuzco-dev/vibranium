@@ -194,3 +194,93 @@ correspondingly a little stronger than it has been, which is the constant it alw
 Not covered here: the worn-armour look and the in-hand item art on a real client. The
 equipment-asset gate proves every layer resolves to a correctly-sized texture and every
 generated texture was read directly as an image, but nobody has seen godite on a player model.
+
+---
+
+# Vibranium 1.8.1 verification — the enchantment glint
+
+Date: 2026-08-18. Target unchanged: Minecraft 26.2, Fabric Loader 0.19.3, Loom 1.17, JDK 25.
+
+## The report, and what it actually was
+
+"Enchanted vibranium gear does not go shiny like diamond does." There was no missing texture
+and no missing registration: **the glint was being drawn the whole time, in the right place,
+and could not be seen.**
+
+The glint is not a per-item asset and cannot be one. `ItemStack.hasFoil()` reads
+`minecraft:enchantment_glint_override` and otherwise falls through to `isEnchanted()`;
+`CuboidItemModelWrapper` — the handler behind `{"type":"minecraft:model"}` — sets
+`FoilType.STANDARD` from that, and `ItemFeatureRenderer` draws it with one hardcoded texture,
+`Identifier.withDefaultNamespace("textures/misc/enchanted_glint_item.png")`. A mod has no hook
+there. Every input this mod does control — the item definitions, the models, the sprites, the
+item classes, the `#minecraft:swords`/`axes`/... tags — was already identical in shape to
+vanilla's, and nothing in the mod sets a glint override (checked: the whole game jar references
+`ENCHANTMENT_GLINT_OVERRIDE` from exactly three classes, none of them an item-property helper).
+
+The cause was colour. The glint blends **additively** (`BlendFunction.GLINT` = `SRC_COLOR, ONE`)
+and its own colour is a violet, peak RGB (167, 85, 255) — **hue 267 degrees**. `gen-textures.js`
+paints vibranium at `PURPLE_HUE = 270/360`. Simulating that blend on each sprite's mean opaque
+colour, at the default Glint Strength of 0.75:
+
+| item | base hue | hue once lit | shift |
+|---|---|---|---|
+| iron_sword | 39 | 269 | **-130** |
+| diamond_sword | 167 | 237 | **+70** |
+| netherite_sword | 333 | 267 | **-66** |
+| vibranium_sword | 273 | 270 | **-3** |
+
+Diamond visibly turns lavender. Vibranium gets brighter in the *same violet it already was*,
+which reads as nothing happening. The mod's signature colour is the glint's colour.
+
+## The fix
+
+Brightness contrast in place of the hue contrast vibranium cannot have. Each piece of
+enchantable gear in both metals now splits its item definition on whether the stack carries a
+real enchantments component, and darkens the sprite when it does:
+
+```json
+{"type":"minecraft:condition","property":"minecraft:has_component",
+ "component":"minecraft:enchantments","ignore_default":true,
+ "on_true":  {"type":"minecraft:model","model":"vibranium:item/vibranium_sword",
+              "tints":[{"type":"minecraft:constant","value":-5855578}]},
+ "on_false": {"type":"minecraft:model","model":"vibranium:item/vibranium_sword"}}
+```
+
+- `ignore_default: true` is **load-bearing**, not decoration. `minecraft:enchantments` is a
+  member of `DataComponents.COMMON_ITEM_COMPONENTS`, so it is present on every item ever made
+  and a plain `has_component` test is true for all of them. `ignore_default` switches the test
+  to `ItemStack.hasNonDefault`, which reads the patch rather than the prototype. Grindstones
+  come out right for free: `PatchedDataComponentMap.set` drops a patch entry whose value equals
+  the prototype's, so disenchanting back to `ItemEnchantments.EMPTY` removes the patch and the
+  item returns to its normal look.
+- The tint constant is `0xFFA6A6A6` (`-5855578`), 65% brightness, and it was **calibrated, not
+  guessed**. Netherite is the vanilla item whose glint everyone agrees reads well: base
+  brightness 0.27, a 3.58x sweep between unlit and lit pixels. Vibranium at 65% lands on 0.27
+  and 3.76x — netherite's profile, from the other direction.
+- Godite gets the identical treatment. Its hue sweep already gives it a +34 degree shift, so it
+  was the less broken of the two, but "the same class with different numbers" is this mod's
+  whole design and a rendering rule that applied to one metal only would read as an oversight.
+- The tint is not a silent no-op: `ItemModelGenerator$ItemLayerKey` builds each layer's
+  `MaterialInfo.of(material, transparency, layerIndex, ...)` with **the layer index as the tint
+  index**, so `layer0` is tint 0 and a single-entry `tints` list reaches it. Every model in the
+  set bottoms out at `builtin/generated` (`handheld` and `spear_in_hand` both parent through
+  `item/generated`), so this holds for all twenty.
+- The spears keep their `minecraft:display_context` select and grow the split at each of its two
+  leaves, so the display-context logic stays written once.
+
+## Verified
+
+- `./gradlew build` — PASS, no warnings, deprecation lint still clean.
+- All 37 item definitions parse, and all 61 `vibranium:`-namespaced model references in them
+  resolve to a file on disk.
+- The remapped 1.8.1 jar carries all 20 rewritten definitions.
+- Version bumped 1.8.0 -> 1.8.1 rather than edited in place: 1.8.0 is published.
+
+## NOT verified, and it is the half that matters
+
+**Nobody has looked at an enchanted vibranium sword.** This is a change to what is drawn, and
+the render evidence for it is a colour simulation run against the sprites and the vanilla blend
+function — not a frame. The arithmetic says an enchanted piece should sit visibly darker than an
+unenchanted one with a strong violet sweep travelling over it, at roughly netherite's contrast.
+That prediction wants a pair of eyes on a real client before this is called done: an enchanted
+and an unenchanted piece side by side in the same inventory, in both metals.
