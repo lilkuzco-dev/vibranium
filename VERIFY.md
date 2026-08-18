@@ -274,13 +274,23 @@ real enchantments component, and darkens the sprite when it does:
 - All 37 item definitions parse, and all 61 `vibranium:`-namespaced model references in them
   resolve to a file on disk.
 - The remapped 1.8.1 jar carries all 20 rewritten definitions.
-- Version bumped 1.8.0 -> 1.8.1 rather than edited in place: 1.8.0 is published.
+- Version bumped 1.8.0 -> 1.8.1 rather than edited in place. This was defensive and turned
+  out to be unnecessary: 1.8.0 had been committed but never pushed and never released, so
+  nothing was at risk of changing underneath a shipped version. Bumping was still the right
+  call to make without checking — the cheap move is the one that is correct either way.
 
-## NOT verified, and it is the half that matters
+## Seen on a client
 
-**Nobody has looked at an enchanted vibranium sword.** This is a change to what is drawn, and
-the render evidence for it is a colour simulation run against the sprites and the vanilla blend
-function — not a frame. The arithmetic says an enchanted piece should sit visibly darker than an
-unenchanted one with a strong violet sweep travelling over it, at roughly netherite's contrast.
-That prediction wants a pair of eyes on a real client before this is called done: an enchanted
-and an unenchanted piece side by side in the same inventory, in both metals.
+**Jesse looked at it on a live client on 2026-08-18 and played with it: enchanted gear now reads
+as enchanted.** That is the confirmation this change needed and the only kind it could have had.
+
+Recording what that confirmation is and is not. It is a person looking at the real thing, which
+is the evidence that matters and the evidence the two cosmos releases in rule 9 never got. It is
+not a captured frame, and there is no automated render battery in this repo to produce one — the
+colour arithmetic above predicted the result, and a pair of eyes agreed with it, but nothing here
+would catch it silently regressing. If the tint constant is ever touched, or gen-textures.js
+moves PURPLE_HUE, this needs looking at again by hand.
+
+The prediction it was checked against, for the next person: an enchanted piece sits visibly
+darker than an unenchanted one, with a strong violet sweep travelling over it at roughly
+netherite's contrast.
